@@ -1,0 +1,24 @@
+{
+	"id": "health_potion",
+	"name": "Potion de vie",
+	"description": "Restaure 50 PV",
+	"category": "consumable",
+	"subcategory": "potion",
+	"rarity": "common",
+	"value": 25,
+	"weight": 0.2,
+	"stackable": true,
+	"max_stack": 99,
+	"usable_in_combat": true,
+	"usable_in_field": true,
+	"effects": [
+		{
+			"type": "heal",
+			"target": "self",
+			"value": 50,
+			"is_percentage": false
+		}
+	],
+	"use_animation": "res://animations/items/use_potion.tres",
+	"icon": "res://assets/icons/items/health_potion.png"
+}

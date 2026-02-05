@@ -1,0 +1,88 @@
+{
+  "battle_id": "tutorial",
+  "scenario_file": "res://data/scenarios/tutorial_scenario.json",
+  "name": "Combat Tutoriel",
+  "description": "Apprenez les bases du combat",
+  "terrain": "plains",
+  "player_units": [
+    {
+      "name": "Knight",
+      "id": "player_knight_1",
+      "position": {"x": 3, "y": 7},
+      "stats": {
+        "hp": 100,
+        "attack": 25,
+        "defense": 15,
+        "movement": 5,
+        "range": 1
+      },
+      "abilities": ["basic_attack", "shield_bash"],
+      "color": {"r": 0.2, "g": 0.6, "b": 0.9, "a": 1.0}
+    },
+    {
+      "name": "Archer",
+      "id": "player_archer_1",
+      "position": {"x": 2, "y": 8},
+      "stats": {
+        "hp": 80,
+        "attack": 30,
+        "defense": 10,
+        "movement": 4,
+        "range": 3
+      },
+      "abilities": ["basic_attack", "piercing_arrow"],
+      "color": {"r": 0.3, "g": 0.8, "b": 0.3, "a": 1.0}
+    }
+  ],
+  "enemy_units": [
+    {
+      "name": "Goblin Scout",
+      "id": "enemy_goblin_1",
+      "position": {"x": 15, "y": 7},
+      "stats": {
+        "hp": 50,
+        "attack": 15,
+        "defense": 8,
+        "movement": 5,
+        "range": 1
+      },
+      "abilities": ["basic_attack"],
+      "color": {"r": 0.8, "g": 0.3, "b": 0.3, "a": 1.0}
+    },
+    {
+      "name": "Goblin Archer",
+      "id": "enemy_goblin_2",
+      "position": {"x": 16, "y": 8},
+      "stats": {
+        "hp": 40,
+        "attack": 20,
+        "defense": 6,
+        "movement": 4,
+        "range": 2
+      },
+      "abilities": ["basic_attack", "poison_arrow"],
+      "color": {"r": 0.8, "g": 0.3, "b": 0.3, "a": 1.0}
+    }
+  ],
+  "objectives": {
+    "primary": [
+      {
+        "type": "defeat_all_enemies",
+        "description": "Éliminez tous les ennemis"
+      }
+    ],
+    "secondary": [
+      {
+        "type": "no_units_lost",
+        "description": "Ne perdez aucune unité"
+      }
+    ]
+  },
+  "scenario": {
+    "has_intro": true,
+    "intro_dialogue": "tutorial_intro",
+    "has_outro": true,
+    "outro_victory": "tutorial_victory",
+    "outro_defeat": "tutorial_defeat"
+  }
+}

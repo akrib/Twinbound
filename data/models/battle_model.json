@@ -1,0 +1,20 @@
+{
+  "id": "battle",
+  "type": "object",
+  "fields": {
+    "battle_id": {
+      "type": "string",
+      "required": false
+    },
+    "player_units": {
+      "type": "array",
+      "model": "array_of_units",
+      "required": true
+    },
+    "enemy_units": {
+      "type": "array",
+      "model": "array_of_units",
+      "required": true
+    }
+  }
+}

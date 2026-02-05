@@ -1,0 +1,43 @@
+#!/bin/sh
+
+LIST="documentation/file_list.txt"
+DOC="documentation/documentation_state.txt"
+REPORT="documentation/documentation_report.txt"
+
+echo "Documentation status report" > "$REPORT"
+echo "---------------------------" >> "$REPORT"
+
+if [ ! -f "$DOC" ]; then
+    echo "❌ documentation_state.txt missing" >> "$REPORT"
+    exit 0
+fi
+
+while read -r line; do
+    [ "$line" = "Generating file hash list..." ] && continue
+    FILE=$(echo "$line" | cut -d '|' -f1 | xargs)
+    HASH=$(echo "$line" | cut -d '|' -f2 | xargs)
+
+    DOC_HASH=$(grep "^$FILE" "$DOC" | cut -d '|' -f2 | xargs)
+
+    if [ -z "$DOC_HASH" ]; then
+        echo "📄 $FILE → NOT DOCUMENTED" >> "$REPORT"
+    elif [ "$HASH" != "$DOC_HASH" ]; then
+        echo "⚠️  $FILE → OUTDATED DOC" >> "$REPORT"
+    else
+        echo "✅ $FILE → OK" >> "$REPORT"
+    fi
+done < "$LIST"
+
+echo "documentation_report.txt generated."
+
+
+# --- 2. Export des infos de build ---
+if command -v python >/dev/null 2>&1; then
+    python tools/export_debug_info.py
+elif command -v python3 >/dev/null 2>&1; then
+    python3 tools/export_debug_info.py
+else
+    echo "❌ Python not found, build info not generated"
+fi
+
+echo "✅ Post-commit hook finished"

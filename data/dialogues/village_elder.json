@@ -1,0 +1,57 @@
+{
+	"id": "village_elder",
+	"title": "Conversation avec l'ancien",
+	"start_node": "greeting",
+	"nodes": {
+		"greeting": {
+			"speaker": "village_elder",
+			"text": "Bienvenue, jeune voyageur. Que puis-je faire pour toi ?",
+			"choices": [
+				{
+					"text": "Parle-moi de ce village",
+					"next": "village_info",
+					"conditions": []
+				},
+				{
+					"text": "J'ai besoin d'aide pour une quête",
+					"next": "quest_help",
+					"conditions": ["quest:main_quest_started"]
+				},
+				{
+					"text": "Au revoir",
+					"next": "end"
+				}
+			]
+		},
+		"village_info": {
+			"speaker": "village_elder",
+			"text": "Notre village est ancien. Fondé il y a trois siècles...",
+			"choices": [
+				{
+					"text": "Intéressant. Continue.",
+					"next": "village_history"
+				},
+				{
+					"text": "Merci. À plus tard.",
+					"next": "end"
+				}
+			]
+		},
+		"quest_help": {
+			"speaker": "village_elder",
+			"text": "Ah, la prophétie... Prends ceci.",
+			"actions": [
+				{"type": "give_item", "item_id": "ancient_map", "quantity": 1},
+				{"type": "update_quest", "quest_id": "main_quest", "stage": 2}
+			],
+			"choices": [
+				{"text": "Merci !", "next": "end"}
+			]
+		},
+		"end": {
+			"speaker": "village_elder",
+			"text": "Que la fortune t'accompagne.",
+			"is_end": true
+		}
+	}
+}

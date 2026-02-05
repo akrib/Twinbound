@@ -1,0 +1,47 @@
+{
+  "scenario_id": "tutorial",
+  "intro_dialogue": [
+    {
+      "speaker": "Instructeur",
+      "text": "Bienvenue à l'entraînement, recrue !"
+    },
+    {
+      "speaker": "Instructeur",
+      "text": "Aujourd'hui, tu vas apprendre les bases du combat tactique."
+    }
+  ],
+  "turn_events": {
+    "turn_3": {
+      "type": "dialogue",
+      "dialogue": [
+        {
+          "speaker": "Instructeur",
+          "text": "Tu te débrouilles bien ! Continue comme ça."
+        }
+      ]
+    }
+  },
+  "position_events": {
+    "10,10": {
+      "type": "dialogue",
+      "dialogue": [
+        {
+          "speaker": "Système",
+          "text": "Tu as atteint un point stratégique !"
+        }
+      ]
+    }
+  },
+  "outro_victory": [
+    {
+      "speaker": "Instructeur",
+      "text": "Excellent travail, recrue ! Tu es prêt pour le vrai combat."
+    }
+  ],
+  "outro_defeat": [
+    {
+      "speaker": "Instructeur",
+      "text": "Ne t'inquiète pas, tout le monde apprend de ses erreurs."
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+- utiliser un point de repos ne fait toujours pas bouger l'unité
+-les diamant sont trop gros et mal centré 
+-le diamant de préparation ne disparait pas une fois l'attaque faite avec une unité (et ne disparait pas non plus a la fin du tour suivant si l'unité n'a pas joué et ne disparait pas non plus si on attaque)
+-la mécanique de surcharge n'a pas l'air d'etre implémenté
+-ring et type de mana a implémenté correctement dans les jsons et voir si ça fonctionne
+-trouver un spritesheet avec des armes et des éléments de mana
+-maj architécture
+-mettre en place une récupération de la version du dernier build/action git pre-commit 
+-améliorer l'effet d'aura
+-trouver un moyen de lancer le combat sans avoir a me taper l'intro a chaque fois
+-implementer la sauvegarde
+-remplacer tout les print par le global logger
+-comprendre et bien implémenté le module de versionning
+-changer la largeur du popup menu pour l'inventaire
+-creation de team dans la worldmap
+-dialogue dans la world map
+-magasin dans la world map 
+-

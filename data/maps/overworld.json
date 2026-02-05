@@ -1,0 +1,58 @@
+{
+	"id": "overworld",
+	"name": "Monde principal",
+	"description": "La carte du continent de Terramia",
+	"type": "world_map",
+	"grid_size": {"x": 50, "y": 50},
+	"locations": [
+		{
+			"id": "starting_village",
+			"name": "Village de départ",
+			"type": "village",
+			"position": {"x": 10, "y": 15},
+			"scene": "res://scenes/locations/starting_village.tscn",
+			"icon": "res://assets/icons/locations/village.png",
+			"discovered": true,
+			"unlocked": true
+		},
+		{
+			"id": "dark_forest",
+			"name": "Forêt sombre",
+			"type": "dungeon",
+			"position": {"x": 15, "y": 20},
+			"scene": "res://scenes/locations/dark_forest.tscn",
+			"icon": "res://assets/icons/locations/forest.png",
+			"discovered": false,
+			"unlocked": false,
+			"unlock_conditions": ["quest:forest_path_cleared"]
+		},
+		{
+			"id": "capital_city",
+			"name": "Capitale royale",
+			"type": "city",
+			"position": {"x": 25, "y": 25},
+			"scene": "res://scenes/locations/capital.tscn",
+			"icon": "res://assets/icons/locations/city.png",
+			"discovered": false,
+			"unlocked": false
+		}
+	],
+	"connections": [
+		{
+			"from": "starting_village",
+			"to": "dark_forest",
+			"distance": 5,
+			"terrain": "forest_path",
+			"encounters": ["goblin_patrol", "wild_wolves"]
+		},
+		{
+			"from": "dark_forest",
+			"to": "capital_city",
+			"distance": 8,
+			"terrain": "main_road",
+			"encounters": ["bandits"]
+		}
+	],
+	"background": "res://assets/backgrounds/world_map.png",
+	"music": "res://audio/music/world_theme.ogg"
+}

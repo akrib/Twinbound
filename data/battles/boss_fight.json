@@ -1,0 +1,152 @@
+{
+  "battle_id": "boss_fight",
+  "name": "Le Seigneur des Ténèbres",
+  "description": "Affrontement final contre le boss",
+  "terrain": "castle",
+  "player_units": [
+    {
+      "name": "Hero Knight",
+      "id": "player_hero",
+      "position": {"x": 5, "y": 7},
+      "stats": {
+        "hp": 200,
+        "attack": 45,
+        "defense": 30,
+        "movement": 5,
+        "range": 1
+      },
+      "abilities": ["basic_attack", "heroic_strike", "divine_shield", "rally_cry"],
+      "color": {"r": 0.2, "g": 0.6, "b": 0.9, "a": 1.0}
+    },
+    {
+      "name": "Arch Mage",
+      "id": "player_archmage",
+      "position": {"x": 4, "y": 8},
+      "stats": {
+        "hp": 120,
+        "attack": 60,
+        "defense": 15,
+        "movement": 4,
+        "range": 5
+      },
+      "abilities": ["fireball", "ice_storm", "lightning_chain", "teleport"],
+      "color": {"r": 0.6, "g": 0.3, "b": 0.9, "a": 1.0}
+    },
+    {
+      "name": "Master Ranger",
+      "id": "player_ranger_master",
+      "position": {"x": 6, "y": 8},
+      "stats": {
+        "hp": 140,
+        "attack": 50,
+        "defense": 20,
+        "movement": 6,
+        "range": 4
+      },
+      "abilities": ["basic_attack", "explosive_arrow", "rain_of_arrows", "evasion"],
+      "color": {"r": 0.3, "g": 0.7, "b": 0.3, "a": 1.0}
+    },
+    {
+      "name": "High Priest",
+      "id": "player_priest",
+      "position": {"x": 5, "y": 9},
+      "stats": {
+        "hp": 130,
+        "attack": 25,
+        "defense": 20,
+        "movement": 4,
+        "range": 4
+      },
+      "abilities": ["heal", "mass_heal", "resurrection", "divine_protection"],
+      "color": {"r": 0.9, "g": 0.9, "b": 0.9, "a": 1.0}
+    }
+  ],
+  "enemy_units": [
+    {
+      "name": "Dark Lord",
+      "id": "enemy_boss",
+      "position": {"x": 15, "y": 7},
+      "stats": {
+        "hp": 500,
+        "attack": 60,
+        "defense": 40,
+        "movement": 4,
+        "range": 2
+      },
+      "abilities": ["dark_slash", "shadow_wave", "life_drain", "summon_minions"],
+      "color": {"r": 0.5, "g": 0.1, "b": 0.5, "a": 1.0}
+    },
+    {
+      "name": "Dark Knight",
+      "id": "enemy_dark_knight_1",
+      "position": {"x": 13, "y": 6},
+      "stats": {
+        "hp": 120,
+        "attack": 40,
+        "defense": 25,
+        "movement": 5,
+        "range": 1
+      },
+      "abilities": ["basic_attack", "darkness_strike"],
+      "color": {"r": 0.3, "g": 0.1, "b": 0.3, "a": 1.0}
+    },
+    {
+      "name": "Dark Knight",
+      "id": "enemy_dark_knight_2",
+      "position": {"x": 13, "y": 8},
+      "stats": {
+        "hp": 120,
+        "attack": 40,
+        "defense": 25,
+        "movement": 5,
+        "range": 1
+      },
+      "abilities": ["basic_attack", "darkness_strike"],
+      "color": {"r": 0.3, "g": 0.1, "b": 0.3, "a": 1.0}
+    },
+    {
+      "name": "Dark Mage",
+      "id": "enemy_dark_mage",
+      "position": {"x": 17, "y": 7},
+      "stats": {
+        "hp": 90,
+        "attack": 50,
+        "defense": 12,
+        "movement": 4,
+        "range": 4
+      },
+      "abilities": ["shadow_bolt", "curse", "dark_barrier"],
+      "color": {"r": 0.4, "g": 0.1, "b": 0.4, "a": 1.0}
+    }
+  ],
+  "objectives": {
+    "primary": [
+      {
+        "type": "defeat_boss",
+        "unit_id": "enemy_boss",
+        "description": "Vainquez le Seigneur des Ténèbres"
+      }
+    ],
+    "secondary": [
+      {
+        "type": "no_units_lost",
+        "description": "Ne perdez aucun héros"
+      }
+    ]
+  },
+  "scenario": {
+    "has_intro": true,
+    "intro_dialogue": "boss_fight_intro",
+    "has_outro": true,
+    "outro_victory": "boss_fight_victory",
+    "outro_defeat": "boss_fight_defeat",
+    "special_events": {
+      "boss_half_hp": {
+        "trigger": "unit_hp_below",
+        "unit_id": "enemy_boss",
+        "threshold": 0.5,
+        "action": "summon_reinforcements"
+      }
+    }
+  }
+}

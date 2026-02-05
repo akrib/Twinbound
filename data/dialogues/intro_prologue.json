@@ -1,0 +1,22 @@
+{
+  "id": "intro_prologue",
+  "title": "Prologue",
+  "category": "story",
+  "sequences": [
+    {
+      "id": "opening",
+      "lines": [
+        {
+          "speaker": "Narrateur",
+          "text": "Il était une fois, dans un royaume lointain...",
+          "emotion": "neutral"
+        },
+        {
+          "speaker": "Narrateur",
+          "text": "Deux héros s'apprêtaient à écrire leur légende.",
+          "emotion": "neutral"
+        }
+      ]
+    }
+  ]
+}

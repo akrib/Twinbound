@@ -1,0 +1,10 @@
+{
+  "id": "stats",
+  "type": "object",
+  "fields": {
+    "attack": { "type": "number", "integer": true, "min": 0, "normalize": "int" },
+    "defense": { "type": "number", "integer": true, "min": 0, "normalize": "int" },
+    "speed": { "type": "number", "integer": true, "min": 0, "normalize": "int" },
+    "range": { "type": "number", "integer": true, "min": 0, "normalize": "int" }
+  }
+}

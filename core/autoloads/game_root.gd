@@ -148,7 +148,8 @@ func _initialize_ui_systems() -> void:
 	print("[GameRoot] ✅ Systèmes UI initialisés")
 
 func _create_system(key: String, node_name: String) -> Node:
-	"""Crée et ajoute un système depuis son script"""
+	"""Crée et ajoute un système depuis son script.
+	Détecte automatiquement le type natif hérité (Node, CanvasLayer, etc.)"""
 	
 	var script_path = SCRIPTS.get(key, "")
 	
@@ -165,13 +166,29 @@ func _create_system(key: String, node_name: String) -> Node:
 		push_error("[GameRoot] Échec du chargement du script : %s" % script_path)
 		return null
 	
-	var instance = Node.new()
+	# 🔥 FIX : Détecter le type natif hérité par le script
+	# pour instancier le bon type de base (Node, CanvasLayer, etc.)
+	var base_type: String = script.get_instance_base_type()
+	var instance: Node
+	
+	match base_type:
+		"CanvasLayer":
+			instance = CanvasLayer.new()
+		"Control":
+			instance = Control.new()
+		"Node2D":
+			instance = Node2D.new()
+		"Node3D":
+			instance = Node3D.new()
+		_:
+			instance = Node.new()
+	
 	instance.set_script(script)
 	instance.name = node_name
 	
 	add_child(instance)
 	
-	print("[GameRoot]   → %s chargé" % node_name)
+	print("[GameRoot]   → %s chargé (%s)" % [node_name, base_type])
 	return instance
 
 func _connect_systems() -> void:
@@ -213,6 +230,21 @@ func _load_initial_scene() -> void:
 			scene_loader.load_scene_by_id(SceneRegistry.SceneID.MAIN_MENU, false)
 		else:
 			push_warning("[GameRoot] Menu principal non trouvé, aucune scène chargée")
+
+# ============================================================================
+# CALLBACKS SCÈNE (appelés par SceneLoader)
+# ============================================================================
+
+func _on_scene_loaded(scene: Node) -> void:
+	"""Appelé par SceneLoader quand une nouvelle scène est chargée"""
+	current_scene = scene
+	
+	if global_logger:
+		global_logger.info("SCENE", "Scène chargée : %s" % scene.name)
+
+func _on_scene_unloaded() -> void:
+	"""Appelé par SceneLoader quand la scène actuelle est déchargée"""
+	current_scene = null
 
 # ============================================================================
 # API PUBLIQUE (Raccourcis)

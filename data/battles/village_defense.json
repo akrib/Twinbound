@@ -1,0 +1,172 @@
+{
+  "battle_id": "village_defense",
+  "name": "Défense du Village",
+  "description": "Protégez le village des monstres",
+  "terrain": "castle",
+  "player_units": [
+    {
+      "name": "Paladin",
+      "id": "player_paladin_1",
+      "position": {"x": 10, "y": 5},
+      "stats": {
+        "hp": 150,
+        "attack": 28,
+        "defense": 25,
+        "movement": 4,
+        "range": 1
+      },
+      "abilities": ["basic_attack", "holy_strike", "healing_aura"],
+      "color": {"r": 0.9, "g": 0.8, "b": 0.3, "a": 1.0}
+    },
+    {
+      "name": "Cleric",
+      "id": "player_cleric_1",
+      "position": {"x": 10, "y": 3},
+      "stats": {
+        "hp": 80,
+        "attack": 15,
+        "defense": 12,
+        "movement": 4,
+        "range": 4
+      },
+      "abilities": ["heal", "bless", "smite"],
+      "color": {"r": 0.9, "g": 0.9, "b": 0.9, "a": 1.0}
+    },
+    {
+      "name": "Archer",
+      "id": "player_archer_2",
+      "position": {"x": 8, "y": 4},
+      "stats": {
+        "hp": 80,
+        "attack": 30,
+        "defense": 10,
+        "movement": 4,
+        "range": 3
+      },
+      "abilities": ["basic_attack", "piercing_arrow", "volley"],
+      "color": {"r": 0.3, "g": 0.8, "b": 0.3, "a": 1.0}
+    },
+    {
+      "name": "Archer",
+      "id": "player_archer_3",
+      "position": {"x": 12, "y": 4},
+      "stats": {
+        "hp": 80,
+        "attack": 30,
+        "defense": 10,
+        "movement": 4,
+        "range": 3
+      },
+      "abilities": ["basic_attack", "piercing_arrow", "volley"],
+      "color": {"r": 0.3, "g": 0.8, "b": 0.3, "a": 1.0}
+    }
+  ],
+  "enemy_units": [
+    {
+      "name": "Orc Warrior",
+      "id": "enemy_orc_1",
+      "position": {"x": 10, "y": 14},
+      "stats": {
+        "hp": 90,
+        "attack": 30,
+        "defense": 15,
+        "movement": 5,
+        "range": 1
+      },
+      "abilities": ["basic_attack", "cleave"],
+      "color": {"r": 0.5, "g": 0.7, "b": 0.3, "a": 1.0}
+    },
+    {
+      "name": "Orc Warrior",
+      "id": "enemy_orc_2",
+      "position": {"x": 8, "y": 14},
+      "stats": {
+        "hp": 90,
+        "attack": 30,
+        "defense": 15,
+        "movement": 5,
+        "range": 1
+      },
+      "abilities": ["basic_attack", "cleave"],
+      "color": {"r": 0.5, "g": 0.7, "b": 0.3, "a": 1.0}
+    },
+    {
+      "name": "Orc Warrior",
+      "id": "enemy_orc_3",
+      "position": {"x": 12, "y": 14},
+      "stats": {
+        "hp": 90,
+        "attack": 30,
+        "defense": 15,
+        "movement": 5,
+        "range": 1
+      },
+      "abilities": ["basic_attack", "cleave"],
+      "color": {"r": 0.5, "g": 0.7, "b": 0.3, "a": 1.0}
+    },
+    {
+      "name": "Orc Shaman",
+      "id": "enemy_orc_shaman",
+      "position": {"x": 10, "y": 13},
+      "stats": {
+        "hp": 70,
+        "attack": 35,
+        "defense": 10,
+        "movement": 4,
+        "range": 3
+      },
+      "abilities": ["lightning_bolt", "curse", "heal_ally"],
+      "color": {"r": 0.5, "g": 0.7, "b": 0.3, "a": 1.0}
+    },
+    {
+      "name": "Goblin Raider",
+      "id": "enemy_goblin_raider_1",
+      "position": {"x": 7, "y": 13},
+      "stats": {
+        "hp": 50,
+        "attack": 20,
+        "defense": 8,
+        "movement": 6,
+        "range": 1
+      },
+      "abilities": ["basic_attack", "sneak_attack"],
+      "color": {"r": 0.8, "g": 0.3, "b": 0.3, "a": 1.0}
+    },
+    {
+      "name": "Goblin Raider",
+      "id": "enemy_goblin_raider_2",
+      "position": {"x": 13, "y": 13},
+      "stats": {
+        "hp": 50,
+        "attack": 20,
+        "defense": 8,
+        "movement": 6,
+        "range": 1
+      },
+      "abilities": ["basic_attack", "sneak_attack"],
+      "color": {"r": 0.8, "g": 0.3, "b": 0.3, "a": 1.0}
+    }
+  ],
+  "objectives": {
+    "primary": [
+      {
+        "type": "survive_turns",
+        "turns": 10,
+        "description": "Survivez pendant 10 tours"
+      }
+    ],
+    "secondary": [
+      {
+        "type": "defeat_all_enemies",
+        "description": "Éliminez tous les ennemis (bonus)"
+      }
+    ]
+  },
+  "scenario": {
+    "has_intro": true,
+    "intro_dialogue": "village_defense_intro",
+    "has_outro": true,
+    "outro_victory": "village_defense_victory",
+    "outro_defeat": "village_defense_defeat"
+  }
+}

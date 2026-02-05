@@ -1,0 +1,39 @@
+{
+  "id": "unit",
+  "type": "object",
+  "fields": {
+    "id": {
+      "type": "string",
+      "required": true
+    },
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "current_hp": {
+      "type": "number",
+      "required": true,
+      "integer": true,
+      "min": 1,
+      "max": 9999,
+      "normalize": "int"
+    },
+    "max_hp": {
+      "type": "number",
+      "required": true,
+      "integer": true,
+      "min": 1,
+      "max": 9999,
+      "normalize": "int"
+    },
+    "position": {
+      "type": "object",
+      "model": "position"
+    },
+    "stats": {
+      "type": "object",
+      "model": "stats",
+      "required": false
+    }
+  }
+}

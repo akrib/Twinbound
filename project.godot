@@ -15,6 +15,7 @@ config/description="Jeu avec architecture GameRoot persistante"
 config/version="1.0.0"
 run/main_scene="res://core/game_root.tscn"
 config/features=PackedStringArray("4.5", "Forward Plus")
+boot_splash/image="uid://bnbvp4vda5te1"
 config/icon="res://icon.svg"
 
 [autoload]

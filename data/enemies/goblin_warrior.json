@@ -1,0 +1,51 @@
+{
+	"id": "goblin_warrior",
+	"name": "Goblin Guerrier",
+	"description": "Un goblin armé d'une épée rouillée",
+	"type": "humanoid",
+	"rank": "common",
+	"stats": {
+		"hp": 50,
+		"mp": 10,
+		"strength": 12,
+		"defense": 8,
+		"magic": 3,
+		"magic_defense": 5,
+		"speed": 15,
+		"luck": 5
+	},
+	"resistances": {
+		"physical": 0,
+		"fire": -0.5,
+		"ice": 0,
+		"lightning": 0,
+		"dark": 0.2
+	},
+	"abilities": [
+		"goblin_slash",
+		"battle_cry"
+	],
+	"ai_behavior": "aggressive_melee",
+	"loot_table": {
+		"gold": {"min": 5, "max": 15},
+		"items": [
+			{"item_id": "rusty_sword", "chance": 0.15},
+			{"item_id": "leather_scraps", "chance": 0.4},
+			{"item_id": "health_potion", "chance": 0.25}
+		]
+	},
+	"experience": 25,
+	"sprite": "res://assets/sprites/enemies/goblin_warrior.png",
+	"animations": {
+		"idle": "res://animations/enemies/goblin_idle.tres",
+		"attack": "res://animations/enemies/goblin_attack.tres",
+		"hit": "res://animations/enemies/goblin_hit.tres",
+		"death": "res://animations/enemies/goblin_death.tres"
+	},
+	"sprite_path": "res://asset/unit/unit.png",
+	"sprite_frame": 3,
+	"sprite_hframes": 7,
+	"sprite_vframes": 3,
+	"materialization_ring": "mat_basic_line",
+	"channeling_ring": "chan_neutral"
+}

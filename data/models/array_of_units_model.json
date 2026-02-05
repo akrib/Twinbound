@@ -1,0 +1,8 @@
+{
+  "id": "array_of_units",
+  "type": "array",
+  "items": {
+    "model": "unit"
+  },
+  "min_size": 1
+}

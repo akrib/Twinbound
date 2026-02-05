@@ -1,0 +1,55 @@
+{
+  "id": "dark_forest",
+  "name": "Forêt Sombre",
+  "description": "Une forêt dense et dangereuse, repaire de bandits et de créatures",
+  "type": "dungeon",
+  "population": 0,
+  "actions": [
+    {
+      "id": "explore_forest",
+      "type": "battle",
+      "label": "⚔️ Explorer la Forêt",
+      "icon": "res://assets/icons/actions/battle.png",
+      "battle_id": "forest_battle",
+      "description": "Affronter les bandits embusqués",
+      "unlocked_at_step": 0
+    },
+    {
+      "id": "search_for_clues",
+      "type": "custom",
+      "label": "🔍 Chercher des indices",
+      "icon": "res://assets/icons/actions/search.png",
+      "unlocked_at_step": 1,
+      "event": {
+        "type": "custom_event",
+        "event_id": "forest_clue_found"
+      }
+    },
+    {
+      "id": "camp_in_forest",
+      "type": "custom",
+      "label": "🏕️ Camper (repos)",
+      "icon": "res://assets/icons/actions/rest.png",
+      "unlocked_at_step": 0,
+      "event": {
+        "type": "heal_party",
+        "amount": 50
+      }
+    }
+  ],
+  "npcs": [
+    {
+      "id": "mysterious_hermit",
+      "name": "Ermite Mystérieux",
+      "dialogue_id": "forest_hermit",
+      "locations": [
+        {
+          "place_id": "forest_clearing",
+          "place_name": "Clairière cachée",
+          "chance": 30.0
+        }
+      ]
+    }
+  ],
+  "shops": []
+}

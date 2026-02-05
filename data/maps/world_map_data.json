@@ -1,0 +1,74 @@
+{
+  "id": "main_world",
+  "name": "Continent de Terramia",
+  "grid_size": {
+	"width": 1920,
+	"height": 1080
+  },
+  "locations": [
+	{
+	  "id": "starting_village",
+	  "name": "Village de Départ",
+	  "type": "village",
+	  "position": {"x": 400, "y": 300},
+	  "icon": "res://assets/icons/locations/village.png",
+	  "scale": 2.0,
+	  "color": {"r": 0.3, "g": 0.8, "b": 0.3, "a": 1.0},
+	  "unlocked_at_step": 0,
+	  "connections": ["dark_forest", "capital_city"]
+	},
+	{
+	  "id": "dark_forest",
+	  "name": "Forêt Sombre",
+	  "type": "dungeon",
+	  "position": {"x": 700, "y": 650},
+	  "icon": "res://assets/icons/locations/forest.png",
+	  "scale": 2.5,
+	  "color": {"r": 0.2, "g": 0.5, "b": 0.2, "a": 1.0},
+	  "unlocked_at_step": 0,
+	  "connections": ["starting_village", "capital_city"]
+	},
+	{
+	  "id": "capital_city",
+	  "name": "Capitale Royale",
+	  "type": "city",
+	  "position": {"x": 960, "y": 540},
+	  "icon": "res://assets/icons/locations/city.png",
+	  "scale": 3.0,
+	  "color": {"r": 0.9, "g": 0.8, "b": 0.5, "a": 1.0},
+	  "unlocked_at_step": 2,
+	  "connections": ["starting_village", "dark_forest", "eastern_port"]
+	},
+	{
+	  "id": "eastern_port",
+	  "name": "Port de l'Est",
+	  "type": "village",
+	  "position": {"x": 1500, "y": 700},
+	  "icon": "res://assets/icons/locations/port.png",
+	  "scale": 2.0,
+	  "color": {"r": 0.3, "g": 0.6, "b": 0.9, "a": 1.0},
+	  "unlocked_at_step": 3,
+	  "connections": ["capital_city"]
+	}
+  ],
+  "connections_visual": {
+	"color": {"r": 0.7, "g": 0.7, "b": 0.7, "a": 0.8},
+	"color_locked": {"r": 0.3, "g": 0.3, "b": 0.3, "a": 0.4},
+	"width": 5.0,
+	"dash_length": 20.0,
+	"gap_length": 12.0
+  },
+  "connection_states": {
+	"starting_village_to_dark_forest": "unlocked",
+	"dark_forest_to_capital_city": "locked",
+	"capital_city_to_eastern_port": "hidden"
+  },
+  "player": {
+	"start_location": "starting_village",
+	"icon": "res://icon.svg",
+	"scale": 1.5,
+	"bounce_speed": 1.5,
+	"bounce_amount": 10.0,
+	"move_speed": 300.0
+  }
+}

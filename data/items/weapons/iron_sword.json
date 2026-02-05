@@ -1,0 +1,25 @@
+{
+	"id": "iron_sword",
+	"name": "Épée en fer",
+	"description": "Une épée solide en fer forgé",
+	"category": "weapon",
+	"subcategory": "sword",
+	"rarity": "common",
+	"value": 150,
+	"weight": 3.5,
+	"stackable": false,
+	"max_stack": 1,
+	"equippable": true,
+	"equipment_slot": "main_hand",
+	"stats": {
+		"attack": 15,
+		"strength": 2
+	},
+	"requirements": {
+		"level": 5,
+		"strength": 10
+	},
+	"effects": [],
+	"icon": "res://assets/icons/items/iron_sword.png",
+	"model": "res://assets/models/items/iron_sword.glb"
+}

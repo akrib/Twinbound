@@ -1,0 +1,88 @@
+{
+  "id": "starting_village",
+  "name": "Village de Départ",
+  "description": "Un paisible village où commence votre aventure",
+  "type": "village",
+  "population": 150,
+  "actions": [
+    {
+      "id": "talk_to_elder",
+      "type": "dialogue",
+      "label": "💬 Parler à l'Ancien",
+      "icon": "res://assets/icons/actions/dialogue.png",
+      "dialogue_id": "village_elder",
+      "unlocked_at_step": 0
+    },
+    {
+      "id": "visit_shop",
+      "type": "shop",
+      "label": "🛒 Magasin",
+      "icon": "res://assets/icons/actions/shop.png",
+      "shop_id": "village_general_store",
+      "unlocked_at_step": 0
+    },
+    {
+      "id": "quest_board",
+      "type": "quest_board",
+      "label": "📋 Tableau des Quêtes",
+      "icon": "res://assets/icons/actions/quests.png",
+      "unlocked_at_step": 0
+    },
+    {
+      "id": "inn",
+      "type": "building",
+      "label": "🏠 Auberge",
+      "icon": "res://assets/icons/actions/inn.png",
+      "scene": "res://scenes/world/buildings/inn.tscn",
+      "unlocked_at_step": 0
+    },
+      {
+      "id": "manage_team",
+      "type": "team_management",
+      "label": "👥 Gérer l'Équipe",
+      "unlocked_at_step": 0
+    }
+  ],
+  "npcs": [
+    {
+      "id": "elder_harold",
+      "name": "Harold l'Ancien",
+      "dialogue_id": "village_elder",
+      "locations": [
+        {
+          "place_id": "town_square",
+          "place_name": "Place du village",
+          "chance": 60.0
+        },
+        {
+          "place_id": "elder_house",
+          "place_name": "Maison de l'ancien",
+          "chance": 40.0
+        }
+      ]
+    },
+    {
+      "id": "merchant_greg",
+      "name": "Greg le Marchand",
+      "dialogue_id": "village_merchant",
+      "locations": [
+        {
+          "place_id": "shop",
+          "place_name": "Magasin",
+          "chance": 100.0
+        }
+      ]
+    }
+  ],
+  "shops": [
+    {
+      "id": "village_general_store",
+      "name": "Magasin Général",
+      "inventory": [
+        {"item_id": "health_potion", "stock": 10, "price": 25},
+        {"item_id": "iron_sword", "stock": 2, "price": 150},
+        {"item_id": "leather_armor", "stock": 3, "price": 100}
+      ]
+    }
+  ]
+}

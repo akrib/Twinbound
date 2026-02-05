@@ -1,0 +1,65 @@
+{
+  "starter_knight": {
+    "id": "starter_knight",
+    "name": "Chevalier Débutant",
+    "class": "Knight",
+    "stats": {
+      "hp": 120,
+      "attack": 25,
+      "defense": 20,
+      "movement": 5,
+      "range": 1
+    },
+  "sprite_path": "res://asset/unit/unit.png",
+  "sprite_frame": 3,
+  "sprite_hframes": 7,
+  "sprite_vframes": 3,
+  "materialization_ring": "mat_basic_line",
+  "channeling_ring": "chan_neutral",
+    "abilities": ["basic_attack", "shield_bash"],
+    "color": {"r": 0.3, "g": 0.6, "b": 0.9, "a": 1.0},
+    "recruitment_cost": 0
+  },
+  "starter_mage": {
+    "id": "starter_mage",
+    "name": "Mage Débutant",
+    "class": "Mage",
+    "stats": {
+      "hp": 80,
+      "attack": 35,
+      "defense": 10,
+      "movement": 4,
+      "range": 3
+    },
+  "sprite_path": "res://asset/unit/unit.png",
+  "sprite_frame": 2,
+  "sprite_hframes": 7,
+  "sprite_vframes": 3,
+  "materialization_ring": "mat_basic_line",
+  "channeling_ring": "chan_neutral",
+    "abilities": ["fireball", "heal"],
+    "color": {"r": 0.6, "g": 0.3, "b": 0.9, "a": 1.0},
+    "recruitment_cost": 0
+  },
+  "advanced_warrior": {
+    "id": "advanced_warrior",
+    "name": "Guerrier Vétéran",
+    "class": "Warrior",
+    "stats": {
+      "hp": 150,
+      "attack": 40,
+      "defense": 25,
+      "movement": 5,
+      "range": 1
+    },
+  "sprite_path": "res://asset/unit/unit.png",
+  "sprite_frame": 1,
+  "sprite_hframes": 7,
+  "sprite_vframes": 3,
+  "materialization_ring": "mat_basic_line",
+  "channeling_ring": "chan_neutral",
+    "abilities": ["basic_attack", "heroic_strike", "rally_cry"],
+    "color": {"r": 0.8, "g": 0.2, "b": 0.2, "a": 1.0},
+    "recruitment_cost": 500
+  }
+}

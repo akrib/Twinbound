@@ -1,0 +1,31 @@
+#!/bin/sh
+
+OUTPUT="documentation/file_list.txt"
+REPOMIX_OUTPUT="documentation/repomix_by_hook.txt"
+
+echo "Generating file hash list..." > "$OUTPUT"
+
+# Récupère tous les fichiers suivis par Git
+FILES=$(git ls-files)
+
+for FILE in $FILES; do
+    case "$FILE" in
+        *.gd|*.tscn|*.godot)
+            HASH=$(git hash-object "$FILE" 2>/dev/null)
+            if [ -n "$HASH" ]; then
+                echo "$FILE | ${HASH:0:7}" >> "$OUTPUT"
+            fi
+        ;;
+    esac
+done
+
+echo "file_list.txt updated."
+
+# --- Exécuter repomix si disponible ---
+if command -v repomix >/dev/null 2>&1; then
+    echo "Running repomix..."
+    repomix --include "**/*.gd,**/*.tscn,**/*.godot" --output "$REPOMIX_OUTPUT"
+    echo "repomix_by_hook.txt generated."
+else
+    echo "repomix not found, skipping."
+fi

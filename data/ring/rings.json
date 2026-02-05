@@ -1,0 +1,51 @@
+{
+  "materialization_rings": [
+    {
+      "ring_id": "mat_basic_line",
+      "ring_name": "Anneau de Ligne Basique",
+      "ring_type": "materialization",
+      "attack_shape": "line",
+      "base_range": 3,
+      "area_size": 1,
+      "description": "Une attaque en ligne droite simple"
+    },
+    {
+      "ring_id": "mat_cone",
+      "ring_name": "Anneau de Cône",
+      "ring_type": "materialization",
+      "attack_shape": "cone",
+      "base_range": 2,
+      "area_size": 3,
+      "description": "Une attaque en cône devant le duo"
+    },
+    {
+      "ring_id": "mat_cross",
+      "ring_name": "Anneau de Croix",
+      "ring_type": "materialization",
+      "attack_shape": "cross",
+      "base_range": 2,
+      "area_size": 1,
+      "description": "Attaque en croix (4 directions)"
+    }
+  ],
+  "channeling_rings": [
+    {
+      "ring_id": "chan_fire",
+      "ring_name": "Anneau de Feu",
+      "ring_type": "channeling",
+      "mana_effect_id": "burn",
+      "mana_potency": 1.0,
+      "effect_duration": 3.0,
+      "description": "Inflige des brûlures aux ennemis"
+    },
+    {
+      "ring_id": "chan_ice",
+      "ring_name": "Anneau de Glace",
+      "ring_type": "channeling",
+      "mana_effect_id": "freeze",
+      "mana_potency": 0.8,
+      "effect_duration": 2.0,
+      "description": "Ralentit les ennemis touchés"
+    }
+  ]
+}

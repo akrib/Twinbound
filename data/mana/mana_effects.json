@@ -1,0 +1,38 @@
+{
+  "effects": [
+    {
+      "effect_id": "burn",
+      "effect_name": "Brûlure",
+      "mana_type": "FIRE",
+      "duration": 3.0,
+      "damage_over_time": 5,
+      "stat_modifiers": {
+        "defense": -5
+      },
+      "description": "Inflige des dégâts de feu sur la durée"
+    },
+    {
+      "effect_id": "freeze",
+      "effect_name": "Gel",
+      "mana_type": "ICE",
+      "duration": 2.0,
+      "damage_over_time": 0,
+      "stat_modifiers": {
+        "movement": -2,
+        "speed": -50
+      },
+      "description": "Ralentit significativement la cible"
+    },
+    {
+      "effect_id": "power_boost",
+      "effect_name": "Renforcement",
+      "mana_type": "HOLY",
+      "duration": 4.0,
+      "heal_over_time": 3,
+      "stat_modifiers": {
+        "attack": 10
+      },
+      "description": "Augmente l'attaque et soigne légèrement"
+    }
+  ]
+}

@@ -1,0 +1,111 @@
+{
+  "campaign_id": "main_campaign",
+  "title": "La Prophétie des Duos",
+  "version": "1.0.0",
+  "initial_state": {
+    "chapter": 1,
+    "battle_index": 0,
+    "battles_won": 0,
+    "unlocked_locations": ["starting_village"],
+    "discovered_locations": ["starting_village"],
+    "current_location": "starting_village"
+  },
+  "start_sequence": [
+    {
+      "type": "dialogue",
+      "dialogue_id": "intro_prologue",
+      "blocking": true
+    },
+    {
+      "type": "notification",
+      "message": "Bienvenue dans Tactical RPG Duos !",
+      "duration": 2.5
+    },
+    {
+      "type": "unlock_location",
+      "location": "starting_village"
+    },
+    {
+      "type": "transition",
+      "target": "world_map",
+      "fade_duration": 1.0
+    }
+  ],
+  "chapters": [
+    {
+      "id": 1,
+      "title": "L'Éveil",
+      "description": "Le début de votre aventure",
+      "battles": [
+        {
+          "battle_id": "tutorial",
+          "required": true,
+          "unlock_condition": null
+        },
+        {
+          "battle_id": "forest_battle",
+          "required": true,
+          "unlock_condition": {
+            "type": "battle_completed",
+            "battle_id": "tutorial"
+          }
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "title": "Les Ombres Grandissantes",
+      "description": "La menace se précise",
+      "battles": [
+        {
+          "battle_id": "village_defense",
+          "required": true,
+          "unlock_condition": {
+            "type": "chapter_completed",
+            "chapter_id": 1
+          }
+        },
+        {
+          "battle_id": "boss_fight",
+          "required": true,
+          "unlock_condition": {
+            "type": "battle_completed",
+            "battle_id": "village_defense"
+          }
+        }
+      ]
+    }
+  ],
+  "initial_party": {
+    "max_size": 4,
+    "units": [
+      {
+        "unit_id": "knight_hero",
+        "level": 1,
+        "locked": false
+      },
+      {
+        "unit_id": "archer_starter",
+        "level": 1,
+        "locked": false
+      }
+    ]
+  },
+  "initial_inventory": {
+    "gold": 100,
+    "items": [
+      {
+        "item_id": "health_potion",
+        "quantity": 3
+      },
+      {
+        "item_id": "iron_sword",
+        "quantity": 1
+      }
+    ]
+  },
+  "divine_favor": {
+    "astraeon": 0,
+    "kharvul": 0
+  }
+}

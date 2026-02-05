@@ -1,0 +1,32 @@
+name: Documentation Consistency Check
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+
+jobs:
+  doc-check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Check file documentation versions
+        run: |
+          echo "Checking documentation consistency"
+          FAIL=0
+          for file in $(find . -name "*.gd"); do
+            VERSION=$(grep -E "^# Version:" "$file" | awk '{print $3}')
+            DOC=$(grep -E "^# LastDocReviewed:" "$file" | awk '{print $3}')
+            if [ -n "$VERSION" ] && [ -n "$DOC" ] && [ "$VERSION" != "$DOC" ]; then
+              echo "⚠️ $file → Version:$VERSION / Doc:$DOC"
+              FAIL=1
+            fi
+          done
+
+          if [ $FAIL -eq 1 ]; then
+            echo "::warning::Some files have outdated documentation"
+          else
+            echo "All documentation is up to date"
+          fi

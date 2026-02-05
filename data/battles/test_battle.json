@@ -1,0 +1,148 @@
+{
+  "battle_id": "test_battle_with_sprites",
+  "terrain": "plains",
+  
+  "player_units": [
+    {
+      "name": "Épéiste Vétéran",
+      "id": "player_warrior_01",
+      "position": [3, 7],
+      "stats": {
+        "hp": 120,
+        "attack": 30,
+        "defense": 20,
+        "movement": 4,
+        "range": 1
+      },
+      
+      "sprite_path": "res://asset/unit/unit.png",
+      "sprite_frame": 0,
+      "sprite_hframes": 7,
+      "sprite_vframes": 3,
+      
+      "materialization_ring": "mat_basic_line",
+      "channeling_ring": "chan_fire"
+    },
+    
+    {
+      "name": "Mage Étudiant",
+      "id": "player_mage_01",
+      "position": [4, 7],
+      "stats": {
+        "hp": 80,
+        "attack": 35,
+        "defense": 10,
+        "movement": 3,
+        "range": 2
+      },
+      
+      "sprite_path": "res://asset/unit/unit.png",
+      "sprite_frame": 7,
+      "sprite_hframes": 7,
+      "sprite_vframes": 3,
+      
+      "materialization_ring": "mat_basic_cone",
+      "channeling_ring": "chan_lightning"
+    },
+    
+    {
+      "name": "Archer Éclaireur",
+      "id": "player_archer_01",
+      "position": [5, 7],
+      "stats": {
+        "hp": 90,
+        "attack": 28,
+        "defense": 12,
+        "movement": 5,
+        "range": 3
+      },
+      
+      "sprite_path": "res://asset/unit/unit.png",
+      "sprite_frame": 14,
+      "sprite_hframes": 7,
+      "sprite_vframes": 3,
+      
+      "materialization_ring": "mat_basic_line",
+      "channeling_ring": "chan_wind"
+    }
+  ],
+  
+  "enemy_units": [
+    {
+      "name": "Bandit Lourd",
+      "id": "enemy_bandit_01",
+      "position": [10, 5],
+      "stats": {
+        "hp": 100,
+        "attack": 25,
+        "defense": 15,
+        "movement": 4,
+        "range": 1
+      },
+      
+      "sprite_path": "res://asset/unit/unit.png",
+      "sprite_frame": 1,
+      "sprite_hframes": 7,
+      "sprite_vframes": 3,
+      
+      "materialization_ring": "mat_basic_line",
+      "channeling_ring": "chan_neutral"
+    },
+    
+    {
+      "name": "Sorcier Noir",
+      "id": "enemy_mage_01",
+      "position": [11, 5],
+      "stats": {
+        "hp": 70,
+        "attack": 32,
+        "defense": 8,
+        "movement": 3,
+        "range": 2
+      },
+      
+      "sprite_path": "res://asset/unit/unit.png",
+      "sprite_frame": 8,
+      "sprite_hframes": 7,
+      "sprite_vframes": 3,
+      
+      "materialization_ring": "mat_basic_cone",
+      "channeling_ring": "chan_dark"
+    },
+    
+    {
+      "name": "Archer Renégat",
+      "id": "enemy_archer_01",
+      "position": [12, 6],
+      "stats": {
+        "hp": 85,
+        "attack": 26,
+        "defense": 10,
+        "movement": 5,
+        "range": 3
+      },
+      
+      "sprite_path": "res://asset/unit/unit.png",
+      "sprite_frame": 15,
+      "sprite_hframes": 7,
+      "sprite_vframes": 3,
+      
+      "materialization_ring": "mat_basic_line",
+      "channeling_ring": "chan_poison"
+    }
+  ],
+  
+  "objectives": {
+    "primary": [
+      {
+        "type": "defeat_all_enemies",
+        "description": "Éliminer tous les ennemis"
+      }
+    ],
+    "secondary": []
+  },
+  
+  "scenario": {
+    "scenario_file": "res://data/scenarios/test_scenario.json"
+  }
+}

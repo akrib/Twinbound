@@ -1,0 +1,84 @@
+{
+  "id": "capital_city",
+  "name": "Capitale Royale",
+  "description": "La grande cité, centre du royaume",
+  "type": "city",
+  "population": 5000,
+  "actions": [
+    {
+      "id": "enter_castle",
+      "type": "building",
+      "label": "🏰 Entrer au Château",
+      "icon": "res://assets/icons/actions/castle.png",
+      "scene": "res://scenes/world/buildings/castle.tscn",
+      "unlocked_at_step": 2
+    },
+    {
+      "id": "visit_market",
+      "type": "shop",
+      "label": "🛒 Grand Marché",
+      "icon": "res://assets/icons/actions/market.png",
+      "shop_id": "capital_market",
+      "unlocked_at_step": 2
+    },
+    {
+      "id": "guild_hall",
+      "type": "building",
+      "label": "⚔️ Guilde des Aventuriers",
+      "icon": "res://assets/icons/actions/guild.png",
+      "scene": "res://scenes/world/buildings/guild.tscn",
+      "unlocked_at_step": 2
+    },
+    {
+      "id": "temple",
+      "type": "building",
+      "label": "⛪ Temple",
+      "icon": "res://assets/icons/actions/temple.png",
+      "scene": "res://scenes/world/buildings/temple.tscn",
+      "unlocked_at_step": 2,
+      "event": {
+        "type": "divine_favor",
+        "description": "Choisir votre divinité"
+      }
+    }
+  ],
+  "npcs": [
+    {
+      "id": "king_aldric",
+      "name": "Roi Aldric",
+      "dialogue_id": "king_aldric",
+      "locations": [
+        {
+          "place_id": "throne_room",
+          "place_name": "Salle du Trône",
+          "chance": 100.0
+        }
+      ]
+    },
+    {
+      "id": "guild_master",
+      "name": "Maître de Guilde",
+      "dialogue_id": "guild_master",
+      "locations": [
+        {
+          "place_id": "guild_hall",
+          "place_name": "Salle de Guilde",
+          "chance": 100.0
+        }
+      ]
+    }
+  ],
+  "shops": [
+    {
+      "id": "capital_market",
+      "name": "Grand Marché de la Capitale",
+      "inventory": [
+        {"item_id": "health_potion", "stock": 99, "price": 25},
+        {"item_id": "mana_potion", "stock": 99, "price": 30},
+        {"item_id": "steel_sword", "stock": 5, "price": 500},
+        {"item_id": "steel_armor", "stock": 5, "price": 600},
+        {"item_id": "magic_staff", "stock": 3, "price": 800}
+      ]
+    }
+  ]
+}
