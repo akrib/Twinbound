@@ -10,13 +10,12 @@ config_version=5
 
 [application]
 
-config/name="Mon Jeu"
+config/name="Twinbound"
 config/description="Jeu avec architecture GameRoot persistante"
 config/version="1.0.0"
 run/main_scene="res://core/game_root.tscn"
 config/features=PackedStringArray("4.5", "Forward Plus")
-boot_splash/image="uid://bnbvp4vda5te1"
-config/icon="res://icon.svg"
+config/icon="uid://cf1rjwbn4dnry"
 
 [autoload]
 

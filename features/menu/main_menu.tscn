@@ -1,7 +1,8 @@
-[gd_scene load_steps=3 format=3 uid="uid://ceiip1bmiqtbi"]
+[gd_scene load_steps=4 format=3 uid="uid://ceiip1bmiqtbi"]
 
-[ext_resource type="Script" uid="uid://cvalg4aho3bsa" path="res://features/menu/main_menu.gd" id="1_main_menu"]
-[ext_resource type="Script" uid="uid://dfcb31h84rfiv" path="res://features/debug/debug_version_panel.gd" id="2_3rkf3"]
+[ext_resource type="Script" uid="uid://cj5p8ylemcqq8" path="res://features/menu/main_menu.gd" id="1_main_menu"]
+[ext_resource type="Script" uid="uid://bqr3y5fer6hv3" path="res://features/debug/debug_version_panel.gd" id="2_3rkf3"]
+[ext_resource type="Texture2D" uid="uid://c2wwmbmqrjpes" path="res://asset/twinbound_bg.png" id="2_xlk05"]
 
 [node name="MainMenu" type="Control"]
 layout_mode = 3
@@ -12,14 +13,10 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_main_menu")
 
-[node name="Background" type="ColorRect" parent="."]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-color = Color(0.1, 0.1, 0.15, 1)
+[node name="Background" type="Sprite2D" parent="."]
+position = Vector2(1033.2, 541.8)
+scale = Vector2(1.3460938, 1.053125)
+texture = ExtResource("2_xlk05")
 
 [node name="MarginContainer" type="MarginContainer" parent="."]
 layout_mode = 1
@@ -43,12 +40,14 @@ layout_mode = 2
 size_flags_vertical = 6
 theme_override_colors/font_color = Color(0.9, 0.85, 0.7, 1)
 theme_override_font_sizes/font_size = 72
-text = "AKRIB TACTICAL RPG TEST"
 horizontal_alignment = 1
 
 [node name="SubtitleLabel" type="Label" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.7, 0.65, 0.5, 1)
+size_flags_horizontal = 0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_colors/font_shadow_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(1, 1, 1, 1)
 theme_override_font_sizes/font_size = 24
 text = "documentation status"
 horizontal_alignment = 1
