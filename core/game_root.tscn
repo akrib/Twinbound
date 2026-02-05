@@ -1,0 +1,57 @@
+[gd_scene load_steps=12 format=3 uid="uid://gameroot001"]
+
+[ext_resource type="Script" path="res://core/autoloads/game_root.gd" id="1_gameroot"]
+[ext_resource type="Script" path="res://core/autoloads/event_bus.gd" id="2_eventbus"]
+[ext_resource type="Script" path="res://core/autoloads/global_logger.gd" id="3_logger"]
+[ext_resource type="Script" path="res://core/autoloads/scene_loader.gd" id="4_sceneloader"]
+[ext_resource type="Script" path="res://core/autoloads/game_manager.gd" id="5_gamemanager"]
+[ext_resource type="Script" path="res://core/autoloads/ui_manager.gd" id="6_uimanager"]
+[ext_resource type="Script" path="res://core/autoloads/debug_overlay.gd" id="7_debugoverlay"]
+[ext_resource type="Script" path="res://core/autoloads/battle_data_manager.gd" id="8_battledata"]
+[ext_resource type="Script" path="res://core/autoloads/dialogue_manager.gd" id="9_dialogue"]
+[ext_resource type="Script" path="res://core/autoloads/version_manager.gd" id="10_version"]
+[ext_resource type="Script" path="res://core/autoloads/team_manager.gd" id="11_team"]
+
+[node name="GameRoot" type="Node"]
+script = ExtResource("1_gameroot")
+
+[node name="CoreSystems" type="Node" parent="."]
+
+[node name="EventBus" type="Node" parent="CoreSystems"]
+script = ExtResource("2_eventbus")
+
+[node name="GlobalLogger" type="Node" parent="CoreSystems"]
+script = ExtResource("3_logger")
+
+[node name="VersionManager" type="Node" parent="CoreSystems"]
+script = ExtResource("10_version")
+
+[node name="Managers" type="Node" parent="."]
+
+[node name="SceneLoader" type="Node" parent="Managers"]
+script = ExtResource("4_sceneloader")
+
+[node name="GameManager" type="Node" parent="Managers"]
+script = ExtResource("5_gamemanager")
+
+[node name="BattleDataManager" type="Node" parent="Managers"]
+script = ExtResource("8_battledata")
+
+[node name="DialogueManager" type="Node" parent="Managers"]
+script = ExtResource("9_dialogue")
+
+[node name="TeamManager" type="Node" parent="Managers"]
+script = ExtResource("11_team")
+
+[node name="SceneContainer" type="Node" parent="."]
+
+[node name="UILayer" type="CanvasLayer" parent="."]
+layer = 90
+
+[node name="UIManager" type="CanvasLayer" parent="UILayer"]
+layer = 90
+script = ExtResource("6_uimanager")
+
+[node name="DebugOverlay" type="CanvasLayer" parent="UILayer"]
+layer = 110
+script = ExtResource("7_debugoverlay")
