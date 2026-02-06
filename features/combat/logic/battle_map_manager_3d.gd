@@ -1524,7 +1524,7 @@ func _end_battle(victory: bool) -> void:
 	
 	GameRoot.battle_data_manager.store_battle_results(results)
 	
-	await get_tree().create_timer(2.0).timeout
+	await get_tree().create_timer(1.0).timeout
 	
 	GameRoot.event_bus.change_scene(SceneRegistry.SceneID.BATTLE_RESULTS)
 

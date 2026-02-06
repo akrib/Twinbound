@@ -948,6 +948,7 @@ func show_duo_aura(is_enemy_duo: bool = false) -> void:
 
 	# 🔒 Tween technique pour tracking (ne fait rien visuellement)
 	var t := create_tween()
+	t.tween_interval(0.01)
 	register_tween(t)
 	if !is_instance_valid(self) or is_queued_for_deletion():
 		return
