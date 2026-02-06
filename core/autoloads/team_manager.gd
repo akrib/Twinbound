@@ -4,6 +4,8 @@ extends Node
 ##
 ## Accès via : GameRoot.team_manager
 
+class_name TeamManagerClass
+
 signal team_changed()
 signal unit_recruited(unit_id: String)
 signal unit_dismissed(unit_id: String)

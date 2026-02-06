@@ -21,7 +21,7 @@ signal battle_requested(battle_id: String)
 # ============================================================================
 # CONFIGURATION
 # ============================================================================
-
+const DialogueData = preload("res://core/dialogue/dialogue_data.gd")
 const BATTLE_DATA_PATHS: Dictionary = {
 	"tutorial": "res://data/battles/tutorial.json",
 	"forest_battle": "res://data/battles/forest_battle.json",

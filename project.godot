@@ -13,7 +13,7 @@ config_version=5
 config/name="Twinbound"
 config/description="Jeu avec architecture GameRoot persistante"
 config/version="1.0.0"
-run/main_scene="res://core/game_root.tscn"
+run/main_scene="uid://byp8xytm75beo"
 config/features=PackedStringArray("4.5", "Forward Plus")
 config/icon="uid://cf1rjwbn4dnry"
 

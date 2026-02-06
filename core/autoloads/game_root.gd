@@ -36,7 +36,7 @@ const BarkSystem           = preload("res://core/dialogue/bark_system.gd")
 
 # === FEATURES ===
 const DebugVersionPanel    = preload("res://features/debug/debug_version_panel.gd")
-const MainMenuClass        = preload("res://features/menu/main_menu.gd")
+#const MainMenuClass        = preload("res://features/menu/main_menu.gd")
 const WorldMapClass        = preload("res://features/world_map/logic/world_map.gd")
 
 
@@ -53,9 +53,9 @@ var global_logger: GlobalLoggerClass = null
 var battle_data_manager: BattleDataManagerClass = null
 var dialogue_manager: DialogueManagerClass = null
 var version_manager: VersionManagerClass = null
+var team_manager : TeamManagerClass = null  # TeamManager n'a pas de class_name typé
+var dialogue_data : DialogueData = null
 var campaign_manager: CampaignManagerClass = null
-var team_manager = null  # TeamManager n'a pas de class_name typé
-
 # ============================================================================
 # CONTENEUR DE SCÈNES
 # ============================================================================
@@ -77,8 +77,9 @@ const SCRIPTS = {
 	"battle_data_manager": "res://core/autoloads/battle_data_manager.gd",
 	"dialogue_manager": "res://core/autoloads/dialogue_manager.gd",
 	"version_manager": "res://core/autoloads/version_manager.gd",
-	"campaign_manager": "res://core/autoloads/campaign_manager.gd",
-	"team_manager": "res://core/autoloads/team_manager.gd"
+	"team_manager": "res://core/autoloads/team_manager.gd",
+	"dialogue_data": "res://core/dialogue/dialogue_data.gd",
+	"campaign_manager": "res://core/autoloads/campaign_manager.gd"
 }
 
 

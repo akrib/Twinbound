@@ -1,7 +1,7 @@
 # addons/core/data/dialogue_data_loader.gd
-class_name DialogueDataLoader
-extends Node
 
+extends Node
+class_name DialogueDataLoader
 const DIALOGUES_DIR = "res://data/dialogues/"
 
 var _json_loader: JSONDataLoader

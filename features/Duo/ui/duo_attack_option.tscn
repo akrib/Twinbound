@@ -1,0 +1,58 @@
+[gd_scene load_steps=2 format=3 uid="uid://d1m1nyasv52ue"]
+
+[ext_resource type="Script" uid="uid://cp5lvmnbwkp2w" path="res://features/Duo/ui/duo_attack_option.gd" id="1"]
+
+[node name="DuoAttackOption" type="Button"]
+custom_minimum_size = Vector2(400, 80)
+theme_override_font_sizes/font_size = 18
+script = ExtResource("1")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 10.0
+offset_top = 10.0
+offset_right = -10.0
+offset_bottom = -10.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 20
+
+[node name="ManaSection" type="VBoxContainer" parent="HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="ManaLabel" type="Label" parent="HBoxContainer/ManaSection"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "💧 MANA"
+horizontal_alignment = 1
+
+[node name="ManaName" type="Label" parent="HBoxContainer/ManaSection"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.4, 0.8, 1, 1)
+theme_override_font_sizes/font_size = 16
+text = "Feu"
+horizontal_alignment = 1
+
+[node name="Separator" type="VSeparator" parent="HBoxContainer"]
+layout_mode = 2
+
+[node name="WeaponSection" type="VBoxContainer" parent="HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="WeaponLabel" type="Label" parent="HBoxContainer/WeaponSection"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "⚔️ ARME"
+horizontal_alignment = 1
+
+[node name="WeaponName" type="Label" parent="HBoxContainer/WeaponSection"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.8, 0.4, 1)
+theme_override_font_sizes/font_size = 16
+text = "Épée"
+horizontal_alignment = 1
