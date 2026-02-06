@@ -1,0 +1,102 @@
+{
+  "battle_id": "azure_hill",
+  "name": "Escarmouche sur la Colline Azurée",
+  "description": "Un éclaireur gobelin surveille la vallée depuis la colline. Éliminez-le avant qu'il ne donne l'alerte.",
+  "terrain_type": "hill",
+  "grid_size": {
+    "width": 10,
+    "height": 7
+  },
+
+  "player_units": [
+    {
+      "id": "hero_warrior",
+      "name": "Héros Guerrier",
+      "unit_type": "warrior",
+      "current_hp": 100,
+      "max_hp": 100,
+      "position": [2, 3],
+      "stats": {
+        "attack": 15,
+        "defense": 10,
+        "speed": 5,
+        "range": 1
+      },
+      "sprite_path": "res://asset/unit/warrior_m.png",
+      "sprite_frame": 7,
+      "sprite_hframes": 3,
+      "sprite_vframes": 4,
+      "materialization_ring": "mat_basic_line",
+      "channeling_ring": "chan_poison",
+      "abilities": ["slash", "charge"]
+    },
+    {
+      "id": "hero_archer",
+      "name": "Héros Archer",
+      "unit_type": "archer",
+      "current_hp": 80,
+      "max_hp": 80,
+      "position": [1, 4],
+      "stats": {
+        "attack": 12,
+        "defense": 7,
+        "speed": 6,
+        "range": 4
+      },
+      "sprite_path": "res://asset/unit/ranger_m.png",
+      "sprite_frame": 7,
+      "sprite_hframes": 3,
+      "sprite_vframes": 4,
+      "materialization_ring": "mat_basic_line",
+      "channeling_ring": "chan_poison",
+      "abilities": ["precise_shot", "multishot"]
+    }
+  ],
+
+  "enemy_units": [
+    {
+      "id": "goblin_scout",
+      "name": "Gobelin Éclaireur",
+      "unit_type": "goblin_archer",
+      "current_hp": 45,
+      "max_hp": 45,
+      "position": [8, 3],
+      "stats": {
+        "attack": 10,
+        "defense": 2,
+        "speed": 6,
+        "range": 3
+      },
+      "sprite_path": "res://asset/unit/ninja_m.png",
+      "sprite_frame": 7,
+      "sprite_hframes": 3,
+      "sprite_vframes": 4,
+      "materialization_ring": "mat_basic_line",
+      "channeling_ring": "chan_poison",
+      "abilities": ["poison_arrow"]
+    }
+  ],
+
+  "terrain_obstacles": [
+    { "type": "rock", "position": [4, 2] },
+    { "type": "rock", "position": [5, 4] },
+    { "type": "tree", "position": [6, 3] }
+  ],
+
+  "victory_conditions": {
+    "type": "eliminate_all_enemies"
+  },
+
+  "defeat_conditions": {
+    "type": "all_allies_defeated"
+  },
+
+  "rewards": {
+    "xp": 80,
+    "gold": 50,
+    "items": ["minor_health_potion"]
+  },
+
+  "music": "res://audio/music/battle_theme.ogg",
+  "ambience": "res://audio/sfx/windy_hill.ogg"
+}

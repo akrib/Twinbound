@@ -1,0 +1,58 @@
+{
+  "id": "azure_hill",
+  "name": "Colline Azurée",
+  "description": "Une colline balayée par le vent, offrant une vue dégagée sur toute la vallée. Un lieu stratégique souvent utilisé par les éclaireurs.",
+  "type": "landmark",
+  "population": 0,
+
+  "actions": [
+    {
+      "id": "scout_hill",
+      "type": "battle",
+      "label": "⚔️ Affronter l'Éclaireur",
+      "icon": "res://assets/icons/actions/battle.png",
+      "battle_id": "azure_hill",
+      "description": "Un gobelin éclaireur surveille la zone. Éliminez-le avant qu'il ne donne l'alerte.",
+      "unlocked_at_step": 0
+    },
+    {
+      "id": "observe_landscape",
+      "type": "custom",
+      "label": "👁️ Observer les environs",
+      "icon": "res://assets/icons/actions/search.png",
+      "unlocked_at_step": 0,
+      "event": {
+        "type": "custom_event",
+        "event_id": "azure_hill_viewpoint"
+      }
+    },
+    {
+      "id": "rest_on_hill",
+      "type": "custom",
+      "label": "🛏️ Se reposer",
+      "icon": "res://assets/icons/actions/rest.png",
+      "unlocked_at_step": 0,
+      "event": {
+        "type": "heal_party",
+        "amount": 30
+      }
+    }
+  ],
+
+  "npcs": [
+    {
+      "id": "wandering_scholar",
+      "name": "Érudit Itinérant",
+      "dialogue_id": "azure_hill_scholar",
+      "locations": [
+        {
+          "place_id": "hill_top",
+          "place_name": "Sommet de la Colline",
+          "chance": 25.0
+        }
+      ]
+    }
+  ],
+
+  "shops": []
+}

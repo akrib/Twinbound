@@ -172,6 +172,7 @@ func _ready() -> void:
 # ============================================================================
 
 func _create_visuals_3d() -> void:
+	var has_sprite = null
 	shadow_sprite = Sprite3D.new()
 	shadow_sprite.billboard = BaseMaterial3D.BILLBOARD_DISABLED
 	shadow_sprite.texture = _create_circle_texture(64, Color(0, 0, 0, SHADOW_OPACITY))
@@ -186,7 +187,7 @@ func _create_visuals_3d() -> void:
 	sprite_3d.pixel_size = 0.04
 	sprite_3d.position.y = sprite_height
 	sprite_3d.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-	_load_sprite_texture()
+	has_sprite=_load_sprite_texture()
 	add_child(sprite_3d)
 	
 	selection_indicator = _create_selection_ring()
@@ -198,12 +199,12 @@ func _create_visuals_3d() -> void:
 	
 	visible = true
 	show()
-	
-	_start_breathing_animation()
+	if has_sprite:
+		_start_breathing_animation()
 	_create_state_indicators()
 	GameRoot.global_logger.debug("BATTLE_UNIT", "Visuels créés pour %s" % unit_name)
 
-func _load_sprite_texture() -> void:
+func _load_sprite_texture() -> bool:
 	if sprite_path != "" and ResourceLoader.exists(sprite_path):
 		var external_texture = load(sprite_path) as Texture2D
 		
@@ -213,13 +214,15 @@ func _load_sprite_texture() -> void:
 			sprite_3d.vframes = sprite_vframes
 			sprite_3d.frame = sprite_frame
 			GameRoot.global_logger.info("BATTLE_UNIT", "Sprite externe chargé : %s (frame %d)" % [sprite_path, sprite_frame])
-			return
+			return true
 	
 	sprite_3d.texture = _create_unit_texture()
 	sprite_3d.hframes = 1
 	sprite_3d.vframes = 1
 	sprite_3d.frame = 0
+	sprite_3d.scale=Vector3(.3,.2,.3)
 	GameRoot.global_logger.warning("BATTLE_UNIT", "Sprite fallback utilisé pour %s" % unit_name)
+	return false
 
 func _create_unit_texture() -> ImageTexture:
 	var image = Image.create(128, 128, false, Image.FORMAT_RGBA8)
@@ -933,17 +936,37 @@ func _exit_tree() -> void:
 # ============================================================================
 
 func show_duo_aura(is_enemy_duo: bool = false) -> void:
-	if not sprite_3d:
+	# 🔒 Sécurité anti-freed
+	if !is_instance_valid(self):
+		return
+	if is_queued_for_deletion():
+		return
+	if !is_inside_tree():
+		return
+	if sprite_3d == null or !is_instance_valid(sprite_3d):
 		return
 
+	# 🔒 Tween technique pour tracking (ne fait rien visuellement)
+	var t := create_tween()
+	register_tween(t)
+	if !is_instance_valid(self) or is_queued_for_deletion():
+		return
+
+	# 🔥 Si une aura existe déjà, on la détruit proprement
 	if has_meta("duo_aura"):
 		var old_aura := get_meta("duo_aura") as Node3D
-		if old_aura and is_instance_valid(old_aura):
+		if is_instance_valid(old_aura):
 			_fade_and_destroy_duo_aura(old_aura)
 		remove_meta("duo_aura")
 
+	# 🌟 Création de la nouvelle aura
 	var aura := Node3D.new()
 	aura.name = "DuoAura"
+
+	# 🔒 Sécurité : si l’unité est freed entre-temps
+	if !is_instance_valid(self) or is_queued_for_deletion():
+		return
+
 	add_child(aura)
 	set_meta("duo_aura", aura)
 
@@ -954,6 +977,9 @@ func show_duo_aura(is_enemy_duo: bool = false) -> void:
 	var height := 1.6
 
 	for i in range(beam_count):
+		if !is_instance_valid(aura):
+			return
+
 		var beam := MeshInstance3D.new()
 
 		var mesh := CylinderMesh.new()
@@ -989,7 +1015,9 @@ func show_duo_aura(is_enemy_duo: bool = false) -> void:
 
 		aura.add_child(beam)
 
+		# Fade-in
 		var fade := aura.create_tween()
+		register_tween(fade)
 		fade.tween_property(
 			mat,
 			"shader_parameter/alpha_multiplier",
@@ -997,7 +1025,9 @@ func show_duo_aura(is_enemy_duo: bool = false) -> void:
 			0.3
 		).set_delay(i * 0.025).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
 
+		# Oscillation
 		var sway := beam.create_tween()
+		register_tween(sway)
 		sway.set_loops()
 		sway.tween_property(
 			beam,
@@ -1013,17 +1043,20 @@ func show_duo_aura(is_enemy_duo: bool = false) -> void:
 			randf_range(1.8, 2.8)
 		).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
 
+	# Pulsation
 	var pulse := aura.create_tween()
+	register_tween(pulse)
 	pulse.set_loops()
 	pulse.tween_property(aura, "scale", Vector3(1.05, 1.0, 1.05), 0.9)
 	pulse.tween_property(aura, "scale", Vector3.ONE, 0.9)
-
+	# Rotation
 	var rot := aura.create_tween()
+	register_tween(rot)
 	rot.set_loops()
 	rot.tween_property(aura, "rotation:y", TAU, 5.0)
-
+	# Durée de vie
 	await get_tree().create_timer(DUO_AURA_LIFETIME).timeout
-
+	# 🔒 Sécurité finale
 	if is_instance_valid(aura):
 		_fade_and_destroy_duo_aura(aura)
 
@@ -1106,4 +1139,30 @@ func update_state_indicators() -> void:
 	if prepared_indicator:
 		prepared_indicator.visible = has_meta("is_prepared")
 
-# Modifier reset_for_new_turn pour mettre à jour les indicateurs :
+var _active_tweens: Array = []
+
+func register_tween(t: Tween) -> void:
+	if t and is_instance_valid(t):
+		_active_tweens.append(t)
+		t.finished.connect(_on_tween_finished.bind(t))
+
+func _on_tween_finished(t: Tween) -> void:
+	_active_tweens.erase(t)
+
+func has_active_tweens() -> bool:
+	# Nettoyage des tweens freed
+	for t in _active_tweens:
+		if not is_instance_valid(t):
+			_active_tweens.erase(t)
+	return _active_tweens.size() > 0
+
+func is_effect_running() -> bool:
+	# Exemple : duo aura, hit flash, particles
+	# Adapte selon tes nodes internes
+	if has_node("DuoAura") and get_node("DuoAura").visible:
+		return true
+
+	if has_node("HitFlash") and get_node("HitFlash").visible:
+		return true
+
+	return false

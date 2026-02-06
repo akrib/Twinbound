@@ -141,10 +141,31 @@ func start_dialogue(dialogue, override_dialogue_box: DialogueBoxClass = null) ->
 	
 	print("[DialogueManager] ✅ Dialogue démarré : %s" % dialogue.dialogue_id)
 
-func start_dialogue_from_id(dialogue_id: String, override_dialogue_box: DialogueBoxClass = null) -> void:
-	"""Démarre un dialogue à partir de son ID"""
-	# TODO: Implémenter un système de registre de dialogues
-	push_warning("[DialogueManager] start_dialogue_from_id non implémenté")
+func start_dialogue_by_id(dialogue_id: String) -> void:
+	var loader := DialogueDataLoader.new()
+	var data_dict := loader.load_dialogue(dialogue_id)
+
+	if data_dict.is_empty():
+		push_warning("[DialogueManager] Dialogue introuvable : %s" % dialogue_id)
+		return
+
+	var DialogueData = preload("res://core/dialogue/dialogue_data.gd")
+	var dialogue = DialogueData.new(dialogue_id)
+
+	# Séquences
+	if data_dict.has("sequences"):
+		for sequence in data_dict.sequences:
+			if sequence.has("lines"):
+				for line in sequence.lines:
+					dialogue.add_line(line)
+
+	# Lignes directes
+	if data_dict.has("lines"):
+		for line in data_dict.lines:
+			dialogue.add_line(line)
+
+	start_dialogue(dialogue)
+
 
 # ============================================================================
 # AFFICHAGE DES LIGNES

@@ -187,6 +187,9 @@ const MOUSE_RAY_LENGTH: float = 1000.0
 var support_mini_card: CharacterMiniCard = null
 var leader_mini_card: CharacterMiniCard = null
 
+var is_finishing_animations := false
+var _animation_trackers: Array = []  
+
 # ============================================================================
 # SYSTÈME DE TRANSITION DE TOUR
 # ============================================================================
@@ -1477,13 +1480,16 @@ func _check_battle_end() -> void:
 func _end_battle(victory: bool) -> void:
 	is_battle_active = false
 	duo_system.clear_all_duos()
-	
+	await wait_for_all_animations(2.0)
 	if victory:
 		_award_xp_to_survivors()
 	
 	if json_scenario_module.has_outro():
 		change_phase(TurnPhase.CUTSCENE)
 		await json_scenario_module.play_outro(victory)
+	else: 
+		await _play_end_dialogue(victory)
+	
 	
 	var battle_stats = stats_tracker.get_final_stats()
 	
@@ -1542,9 +1548,68 @@ func _calculate_rewards(victory: bool, stats: Dictionary) -> Dictionary:
 		"exp": int(base_exp * efficiency_bonus)
 	}
 
+func wait_for_all_animations(timeout := 2.0) -> void:
+	is_finishing_animations = true
+	var start_time := Time.get_ticks_msec()
+	while _has_running_animations():
+		await get_tree().process_frame
+		if Time.get_ticks_msec() - start_time > int(timeout * 1000):
+			print("[Battle] ⏱ Timeout animations, on force la fin.")
+			break
+	is_finishing_animations = false
+
+func _has_running_animations() -> bool:
+	# Vérifie les animations des unités
+	for unit in unit_manager.get_all_units().filter(func(u): return u.is_alive()):
+		if is_instance_valid(unit):
+
+			# 1) AnimationPlayer
+			if unit.has_node("AnimationPlayer"):
+				var ap = unit.get_node("AnimationPlayer")
+				if ap.is_playing():
+					return true
+
+			# 2) Tweens internes
+			if unit.has_method("has_active_tweens") and unit.has_active_tweens():
+				return true
+
+			# 3) Effets spéciaux (duo aura, hit flash…)
+			if unit.has_method("is_effect_running") and unit.is_effect_running():
+				return true
+
+	# Vérifie les tweens globaux
+	for tween in get_tree().get_processed_tweens():
+		if is_instance_valid(tween) and tween.is_running():
+			return true
+	return false
+
+
+func _play_end_dialogue(victory: bool) -> void:
+	var dialogue_id = null
+	if victory:
+		dialogue_id = battle_data.get("win_dialogue", null)
+	else:
+		dialogue_id = battle_data.get("lose_dialogue", null)
+	if dialogue_id == null:
+		if victory == true:
+			dialogue_id = "default_victory" 
+		else:
+			dialogue_id = "default_defeat"
+
+	print("[Battle] 🎤 Dialogue de fin :", dialogue_id)
+
+	if GameRoot and GameRoot.dialogue_manager:
+		GameRoot.dialogue_manager.start_dialogue_by_id(dialogue_id)
+		await GameRoot.dialogue_manager.dialogue_ended
+
+
+
 # ============================================================================
 # CALLBACKS DUO
 # ============================================================================
+
+
+
 
 func _on_duo_formed(duo_data: Dictionary) -> void:
 	var leader = duo_data.leader as BattleUnit3D

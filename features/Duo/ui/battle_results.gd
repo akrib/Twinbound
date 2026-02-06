@@ -29,8 +29,8 @@ func _ready() -> void:
 	
 	# Récupérer les résultats depuis BattleDataManager ou autre
 	# Pour l'instant, on va utiliser des données de test si non disponibles
-	if BattleDataManager.has_battle_data():
-		var battle_data = BattleDataManager.get_battle_data()
+	if GameRoot.battle_data_manager.has_battle_data():
+		var battle_data = GameRoot.battle_data_manager.get_battle_data()
 		battle_results = battle_data.get("results", {})
 	
 	# Afficher les résultats

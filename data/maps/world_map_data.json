@@ -15,7 +15,7 @@
 	  "scale": 2.0,
 	  "color": {"r": 0.3, "g": 0.8, "b": 0.3, "a": 1.0},
 	  "unlocked_at_step": 0,
-	  "connections": ["dark_forest", "capital_city"]
+	  "connections": ["dark_forest", "capital_city", "azure_hill"]
 	},
 	{
 	  "id": "dark_forest",
@@ -26,8 +26,21 @@
 	  "scale": 2.5,
 	  "color": {"r": 0.2, "g": 0.5, "b": 0.2, "a": 1.0},
 	  "unlocked_at_step": 0,
-	  "connections": ["starting_village", "capital_city"]
+	  "battle_id": "dark_forest",
+	  "connections": ["starting_village", "capital_city", "azure_hill"]
 	},
+	{
+	  "id": "azure_hill",
+	  "name": "Colline Azurée",
+	  "type": "landmark", 
+	  "position": { "x": 880, "y": 480 }, 
+	  "icon": "res://assets/icons/locations/hill.png", 
+	  "scale": 2.2, 
+	  "color": { "r": 0.4, "g": 0.7, "b": 1.0, "a": 1.0 }, 
+	  "unlocked_at_step": 0, 
+	  "battle_id": "azure_hill",
+	  "connections": ["dark_forest", "capital_city"]
+	 },
 	{
 	  "id": "capital_city",
 	  "name": "Capitale Royale",
@@ -37,7 +50,7 @@
 	  "scale": 3.0,
 	  "color": {"r": 0.9, "g": 0.8, "b": 0.5, "a": 1.0},
 	  "unlocked_at_step": 2,
-	  "connections": ["starting_village", "dark_forest", "eastern_port"]
+	  "connections": ["starting_village", "dark_forest", "eastern_port", "azure_hill"]
 	},
 	{
 	  "id": "eastern_port",
