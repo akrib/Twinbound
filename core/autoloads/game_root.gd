@@ -7,6 +7,39 @@ extends Node
 
 class_name GameRootClass
 
+
+# === AUTOLOADS ===
+const EventBusClass        = preload("res://core/autoloads/event_bus.gd")
+const SceneLoaderClass     = preload("res://core/autoloads/scene_loader.gd")
+const UIManagerClass       = preload("res://core/autoloads/ui_manager.gd")
+const DialogueManagerClass = preload("res://core/autoloads/dialogue_manager.gd")
+const TeamManagerClass     = preload("res://core/autoloads/team_manager.gd")
+const BattleDataManagerClass = preload("res://core/autoloads/battle_data_manager.gd")
+const CampaignManagerClass = preload("res://core/autoloads/campaign_manager.gd")
+const GlobalLoggerClass    = preload("res://core/autoloads/global_logger.gd")
+const VersionManagerClass  = preload("res://core/autoloads/version_manager.gd")
+const GameManagerClass     = preload("res://core/autoloads/game_manager.gd")
+const DebugOverlayClass    = preload("res://core/autoloads/debug_overlay.gd")
+
+# === DATA / HELPERS ===
+const SceneRegistry        = preload("res://core/data/scene_registry.gd")
+const JSONDataLoader       = preload("res://core/data/json_data_loader.gd")
+const ModelValidator       = preload("res://core/data/model_validator.gd")
+const ValidationResult     = preload("res://core/data/validation_result.gd")
+const AbilityDataLoader    = preload("res://core/data/ability_data_loader.gd")
+
+# === DIALOGUE SYSTEM ===
+const DialogueData         = preload("res://core/dialogue/dialogue_data.gd")
+const DialogueDataLoader   = preload("res://core/dialogue/dialogue_data_loader.gd")
+const DialogueBoxClass     = preload("res://core/dialogue/dialogue_box.gd")
+const BarkSystem           = preload("res://core/dialogue/bark_system.gd")
+
+# === FEATURES ===
+const DebugVersionPanel    = preload("res://features/debug/debug_version_panel.gd")
+const MainMenuClass        = preload("res://features/menu/main_menu.gd")
+const WorldMapClass        = preload("res://features/world_map/logic/world_map.gd")
+
+
 # ============================================================================
 # RÉFÉRENCES EXPOSÉES (accès via GameRoot.xxx)
 # ============================================================================
@@ -20,6 +53,7 @@ var global_logger: GlobalLoggerClass = null
 var battle_data_manager: BattleDataManagerClass = null
 var dialogue_manager: DialogueManagerClass = null
 var version_manager: VersionManagerClass = null
+var campaign_manager: CampaignManagerClass = null
 var team_manager = null  # TeamManager n'a pas de class_name typé
 
 # ============================================================================
@@ -43,8 +77,12 @@ const SCRIPTS = {
 	"battle_data_manager": "res://core/autoloads/battle_data_manager.gd",
 	"dialogue_manager": "res://core/autoloads/dialogue_manager.gd",
 	"version_manager": "res://core/autoloads/version_manager.gd",
+	"campaign_manager": "res://core/autoloads/campaign_manager.gd",
 	"team_manager": "res://core/autoloads/team_manager.gd"
 }
+
+
+
 
 # ============================================================================
 # ÉTAT
@@ -86,12 +124,9 @@ func _ready() -> void:
 
 func _setup_scene_container() -> void:
 	"""Configure le conteneur de scènes (créé dans la .tscn ou dynamiquement)"""
-	
-	# Chercher le SceneContainer existant dans la scène
 	scene_container = get_node_or_null("SceneContainer")
 	
 	if not scene_container:
-		# Créer dynamiquement si non présent dans la scène
 		scene_container = Node.new()
 		scene_container.name = "SceneContainer"
 		add_child(scene_container)
@@ -101,56 +136,53 @@ func _setup_scene_container() -> void:
 
 func _initialize_core_systems() -> void:
 	"""Initialise les systèmes de base (EventBus, Logger)"""
-	
-	# 1. Global Logger (en premier pour les logs)
 	global_logger = _create_system("global_logger", "GlobalLogger") as GlobalLoggerClass
-	
-	# 2. Event Bus (communication globale)
 	event_bus = _create_system("event_bus", "EventBus") as EventBusClass
-	
 	print("[GameRoot] ✅ Systèmes de base initialisés")
 
 func _initialize_managers() -> void:
 	"""Initialise les managers principaux"""
 	
-	# 3. Scene Loader
+	# SceneLoader
 	scene_loader = _create_system("scene_loader", "SceneLoader") as SceneLoaderClass
 	scene_loader.scene_container = scene_container
 	
-	# 4. Game Manager
+	# GameManager
 	game_manager = _create_system("game_manager", "GameManager") as GameManagerClass
 	game_manager.scene_loader = scene_loader
 	
-	# 5. Battle Data Manager
+	# BattleDataManager
 	battle_data_manager = _create_system("battle_data_manager", "BattleDataManager") as BattleDataManagerClass
 	
-	# 6. Dialogue Manager
+	# DialogueManager
 	dialogue_manager = _create_system("dialogue_manager", "DialogueManager") as DialogueManagerClass
 	
-	# 7. Version Manager
+	# VersionManager
 	version_manager = _create_system("version_manager", "VersionManager") as VersionManagerClass
 	
-	# 8. Team Manager
+	# TeamManager
 	team_manager = _create_system("team_manager", "TeamManager")
+	
+	# CampaignManager (après les autres car il les utilise)
+	campaign_manager = _create_system("campaign_manager", "CampaignManager") as CampaignManagerClass
 	
 	print("[GameRoot] ✅ Managers initialisés")
 
 func _initialize_ui_systems() -> void:
 	"""Initialise les systèmes UI (au-dessus des scènes)"""
-	
-	# 9. UI Manager (CanvasLayer pour UI globale)
 	ui_manager = _create_system("ui_manager", "UIManager") as UIManagerClass
 	
-	# 10. Debug Overlay (en dernier, layer le plus haut) - seulement en debug
 	if OS.is_debug_build():
 		debug_overlay = _create_system("debug_overlay", "DebugOverlay") as DebugOverlayClass
+	
+	# Connecter DialogueManager à la DialogueBox persistante de UIManager
+	if dialogue_manager and ui_manager:
+		GameRoot.dialogue_manager.set_persistent_dialogue_box(ui_manager.get_dialogue_box())
 	
 	print("[GameRoot] ✅ Systèmes UI initialisés")
 
 func _create_system(key: String, node_name: String) -> Node:
-	"""Crée et ajoute un système depuis son script.
-	Détecte automatiquement le type natif hérité (Node, CanvasLayer, etc.)"""
-	
+	"""Crée et ajoute un système depuis son script."""
 	var script_path = SCRIPTS.get(key, "")
 	
 	if script_path == "":
@@ -166,8 +198,6 @@ func _create_system(key: String, node_name: String) -> Node:
 		push_error("[GameRoot] Échec du chargement du script : %s" % script_path)
 		return null
 	
-	# 🔥 FIX : Détecter le type natif hérité par le script
-	# pour instancier le bon type de base (Node, CanvasLayer, etc.)
 	var base_type: String = script.get_instance_base_type()
 	var instance: Node
 	
@@ -185,7 +215,6 @@ func _create_system(key: String, node_name: String) -> Node:
 	
 	instance.set_script(script)
 	instance.name = node_name
-	
 	add_child(instance)
 	
 	print("[GameRoot]   → %s chargé (%s)" % [node_name, base_type])
@@ -193,79 +222,72 @@ func _create_system(key: String, node_name: String) -> Node:
 
 func _connect_systems() -> void:
 	"""Connecte les systèmes entre eux via l'EventBus"""
-	
 	if not event_bus:
-		push_error("[GameRoot] EventBus non initialisé, impossible de connecter les systèmes")
+		push_error("[GameRoot] EventBus non initialisé")
 		return
 	
-	# Connecter SceneLoader aux événements
+	# SceneLoader
 	if scene_loader:
 		event_bus.safe_connect("scene_change_requested", scene_loader._on_scene_change_requested)
 	
-	# Connecter GameManager aux événements
+	# GameManager
 	if game_manager:
 		event_bus.safe_connect("game_started", game_manager._on_game_started)
 		event_bus.safe_connect("game_paused", game_manager._on_game_paused)
 		event_bus.safe_connect("quit_game_requested", game_manager._on_quit_game_requested)
 		event_bus.safe_connect("return_to_menu_requested", game_manager._on_return_to_menu_requested)
 	
-	# Connecter UIManager aux notifications
+	# UIManager
 	if ui_manager:
 		event_bus.safe_connect("notification_posted", ui_manager._on_notification_posted)
+	
+	# CampaignManager
+	if campaign_manager:
+		event_bus.safe_connect("game_started", campaign_manager._on_game_started)
+		event_bus.safe_connect("battle_ended", campaign_manager._on_battle_ended)
 	
 	print("[GameRoot] ✅ Systèmes connectés")
 
 func _check_migrations() -> void:
-	"""Vérifie et applique les migrations de données si nécessaire"""
-	
 	if version_manager:
 		version_manager.check_and_migrate()
 
 func _load_initial_scene() -> void:
 	"""Charge la scène initiale (menu principal)"""
-	
 	if scene_loader:
-		# Vérifier si le menu principal existe
 		if SceneRegistry.scene_exists(SceneRegistry.SceneID.MAIN_MENU):
 			scene_loader.load_scene_by_id(SceneRegistry.SceneID.MAIN_MENU, false)
 		else:
-			push_warning("[GameRoot] Menu principal non trouvé, aucune scène chargée")
+			push_warning("[GameRoot] Menu principal non trouvé")
 
 # ============================================================================
-# CALLBACKS SCÈNE (appelés par SceneLoader)
+# CALLBACKS SCÈNE
 # ============================================================================
 
 func _on_scene_loaded(scene: Node) -> void:
-	"""Appelé par SceneLoader quand une nouvelle scène est chargée"""
 	current_scene = scene
-	
 	if global_logger:
 		global_logger.info("SCENE", "Scène chargée : %s" % scene.name)
 
 func _on_scene_unloaded() -> void:
-	"""Appelé par SceneLoader quand la scène actuelle est déchargée"""
 	current_scene = null
 
 # ============================================================================
-# API PUBLIQUE (Raccourcis)
+# API PUBLIQUE
 # ============================================================================
 
-## Raccourci pour changer de scène
 func change_scene(scene_id: int, transition: bool = true) -> void:
 	if scene_loader:
 		scene_loader.load_scene_by_id(scene_id, transition)
 
-## Raccourci pour changer de scène par chemin
 func change_scene_by_path(scene_path: String, transition: bool = true) -> void:
 	if scene_loader:
 		scene_loader.load_scene(scene_path, transition)
 
-## Raccourci pour émettre une notification
 func notify(message: String, type: String = "info") -> void:
 	if event_bus:
 		event_bus.notify(message, type)
 
-## Raccourci pour logger
 func log_info(category: String, message: String) -> void:
 	if global_logger:
 		global_logger.info(category, message)
@@ -283,28 +305,20 @@ func log_error(category: String, message: String) -> void:
 		global_logger.error(category, message)
 
 # ============================================================================
-# GETTERS POUR COMPATIBILITÉ
+# GETTERS
 # ============================================================================
 
 func get_current_scene() -> Node:
-	"""Retourne la scène actuellement chargée"""
 	return current_scene
 
 func get_current_scene_id() -> int:
-	"""Retourne l'ID de la scène actuelle"""
 	return scene_loader.current_scene_id if scene_loader else -1
 
 func is_loading() -> bool:
-	"""Vérifie si un chargement est en cours"""
 	return scene_loader.is_loading if scene_loader else false
 
 func is_initialized() -> bool:
-	"""Vérifie si GameRoot est complètement initialisé"""
 	return _is_initialized
-
-# ============================================================================
-# ACCÈS AUX SYSTÈMES (pour compatibilité avec l'ancien code)
-# ============================================================================
 
 func get_event_bus() -> EventBusClass:
 	return event_bus
@@ -327,19 +341,19 @@ func get_battle_data_manager() -> BattleDataManagerClass:
 func get_dialogue_manager() -> DialogueManagerClass:
 	return dialogue_manager
 
+func get_campaign_manager() -> CampaignManagerClass:
+	return campaign_manager
+
 # ============================================================================
 # DEBUG
 # ============================================================================
 
 func _input(event: InputEvent) -> void:
 	if OS.is_debug_build():
-		# Toggle debug overlay avec F3
 		if event.is_action_pressed("debug_toggle") and debug_overlay:
 			debug_overlay.toggle_visibility()
 
 func print_status() -> void:
-	"""Affiche l'état de tous les systèmes"""
-	
 	print("\n=== GameRoot Status ===")
 	print("  Initialized: ", _is_initialized)
 	print("  EventBus: ", "OK" if event_bus else "NULL")
@@ -349,17 +363,10 @@ func print_status() -> void:
 	print("  UIManager: ", "OK" if ui_manager else "NULL")
 	print("  BattleDataManager: ", "OK" if battle_data_manager else "NULL")
 	print("  DialogueManager: ", "OK" if dialogue_manager else "NULL")
+	print("  CampaignManager: ", "OK" if campaign_manager else "NULL")
 	print("  VersionManager: ", "OK" if version_manager else "NULL")
 	print("  TeamManager: ", "OK" if team_manager else "NULL")
 	print("  DebugOverlay: ", "OK" if debug_overlay else "N/A (release)")
 	print("  SceneContainer: ", "OK" if scene_container else "NULL")
 	print("  CurrentScene: ", current_scene.name if current_scene else "None")
 	print("========================\n")
-
-func debug_list_children() -> void:
-	"""Liste tous les enfants de GameRoot (debug)"""
-	
-	print("\n=== GameRoot Children ===")
-	for child in get_children():
-		print("  - ", child.name, " (", child.get_class(), ")")
-	print("=========================\n")

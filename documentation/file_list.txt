@@ -22,5 +22,5 @@ core/dialogue/dialogue_data.gd | 244d013
 core/game_root.tscn | 3845958
 features/debug/debug_version_panel.gd | 8ff5e67
 features/menu/main_menu.gd | 32a462c
-features/menu/main_menu.tscn | f80d50a
-project.godot | d14b42e
+features/menu/main_menu.tscn | 4c39802
+project.godot | 79c51d0

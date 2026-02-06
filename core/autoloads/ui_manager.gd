@@ -1,6 +1,7 @@
 extends CanvasLayer
 ## UIManager - Gestion de l'interface utilisateur globale
 ## Gère les notifications, l'écran de chargement, les menus globaux
+## et la DialogueBox persistante (toujours en mémoire)
 ##
 ## Accès via : GameRoot.ui_manager
 
@@ -24,6 +25,7 @@ var loading_progress_bar: ProgressBar = null
 var loading_label: Label = null
 var pause_menu: Control = null
 var transition_overlay: ColorRect = null
+var dialogue_box: DialogueBoxClass = null  # ← NOUVEAU : DialogueBox persistante
 
 # ============================================================================
 # ÉTAT
@@ -37,19 +39,60 @@ var is_loading_visible: bool = false
 # ============================================================================
 
 func _ready() -> void:
-	layer = 90  # Au-dessus des scènes, en dessous du debug
+	layer = 90
 	name = "UIManager"
 	
 	_create_transition_layer()
 	_create_notification_system()
 	_create_loading_screen()
 	_create_pause_menu()
+	_create_dialogue_box()  # ← NOUVEAU
 	
-	print("[UIManager] ✅ Initialisé")
+	print("[UIManager] ✅ Initialisé (avec DialogueBox persistante)")
+
+# ============================================================================
+# DIALOGUE BOX PERSISTANTE
+# ============================================================================
+
+func _create_dialogue_box() -> void:
+	"""Crée la DialogueBox persistante accessible par DialogueManager"""
+	
+	# Charger depuis .tscn si disponible
+	var dialogue_box_scene_path = "res://shared/ui/dialogue_box.tscn"
+	
+	if ResourceLoader.exists(dialogue_box_scene_path):
+		var packed = load(dialogue_box_scene_path)
+		dialogue_box = packed.instantiate() as DialogueBoxClass
+		print("[UIManager]   → DialogueBox chargée depuis .tscn")
+	else:
+		# Fallback : créer programmatiquement
+		dialogue_box = DialogueBoxClass.new()
+		print("[UIManager]   → DialogueBox créée dynamiquement")
+	
+	dialogue_box.name = "PersistentDialogueBox"
+	dialogue_box.visible = false
+	dialogue_box.z_index = 60  # Au-dessus des scènes, sous le pause menu
+	add_child(dialogue_box)
+
+func get_dialogue_box() -> DialogueBoxClass:
+	"""Retourne la DialogueBox persistante"""
+	return dialogue_box
+
+func show_dialogue_box() -> void:
+	"""Affiche la DialogueBox"""
+	if dialogue_box:
+		dialogue_box.show_dialogue_box()
+
+func hide_dialogue_box() -> void:
+	"""Cache la DialogueBox"""
+	if dialogue_box:
+		dialogue_box.hide_dialogue_box()
+
+# ============================================================================
+# TRANSITION LAYER
+# ============================================================================
 
 func _create_transition_layer() -> void:
-	"""Crée l'overlay de transition"""
-	
 	transition_overlay = ColorRect.new()
 	transition_overlay.name = "TransitionOverlay"
 	transition_overlay.color = Color.BLACK
@@ -59,9 +102,11 @@ func _create_transition_layer() -> void:
 	transition_overlay.z_index = 100
 	add_child(transition_overlay)
 
+# ============================================================================
+# NOTIFICATIONS
+# ============================================================================
+
 func _create_notification_system() -> void:
-	"""Crée le conteneur de notifications"""
-	
 	notification_container = VBoxContainer.new()
 	notification_container.name = "NotificationContainer"
 	notification_container.set_anchors_preset(Control.PRESET_TOP_RIGHT)
@@ -74,8 +119,6 @@ func _create_notification_system() -> void:
 	add_child(notification_container)
 
 func _create_loading_screen() -> void:
-	"""Crée l'écran de chargement"""
-	
 	loading_screen = Control.new()
 	loading_screen.name = "LoadingScreen"
 	loading_screen.set_anchors_preset(Control.PRESET_FULL_RECT)
@@ -83,13 +126,11 @@ func _create_loading_screen() -> void:
 	loading_screen.z_index = 50
 	add_child(loading_screen)
 	
-	# Fond semi-transparent
 	var bg = ColorRect.new()
 	bg.color = Color(0.05, 0.05, 0.08, 0.95)
 	bg.set_anchors_preset(Control.PRESET_FULL_RECT)
 	loading_screen.add_child(bg)
 	
-	# Container central
 	var center = CenterContainer.new()
 	center.set_anchors_preset(Control.PRESET_FULL_RECT)
 	loading_screen.add_child(center)
@@ -98,22 +139,18 @@ func _create_loading_screen() -> void:
 	vbox.add_theme_constant_override("separation", 20)
 	center.add_child(vbox)
 	
-	# Label
 	loading_label = Label.new()
 	loading_label.text = "Chargement..."
 	loading_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	loading_label.add_theme_font_size_override("font_size", 32)
 	vbox.add_child(loading_label)
 	
-	# Barre de progression
 	loading_progress_bar = ProgressBar.new()
 	loading_progress_bar.custom_minimum_size = Vector2(400, 30)
 	loading_progress_bar.value = 0
 	vbox.add_child(loading_progress_bar)
 
 func _create_pause_menu() -> void:
-	"""Crée le menu de pause"""
-	
 	pause_menu = Control.new()
 	pause_menu.name = "PauseMenu"
 	pause_menu.set_anchors_preset(Control.PRESET_FULL_RECT)
@@ -121,13 +158,11 @@ func _create_pause_menu() -> void:
 	pause_menu.z_index = 80
 	add_child(pause_menu)
 	
-	# Fond semi-transparent
 	var bg = ColorRect.new()
 	bg.color = Color(0, 0, 0, 0.7)
 	bg.set_anchors_preset(Control.PRESET_FULL_RECT)
 	pause_menu.add_child(bg)
 	
-	# Container central
 	var center = CenterContainer.new()
 	center.set_anchors_preset(Control.PRESET_FULL_RECT)
 	pause_menu.add_child(center)
@@ -146,14 +181,12 @@ func _create_pause_menu() -> void:
 	vbox.add_theme_constant_override("separation", 15)
 	margin.add_child(vbox)
 	
-	# Titre
 	var title = Label.new()
 	title.text = "PAUSE"
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	title.add_theme_font_size_override("font_size", 48)
 	vbox.add_child(title)
 	
-	# Boutons
 	var resume_btn = Button.new()
 	resume_btn.text = "Reprendre"
 	resume_btn.custom_minimum_size = Vector2(200, 50)
@@ -183,24 +216,18 @@ func _create_pause_menu() -> void:
 # ============================================================================
 
 func create_transition_overlay() -> ColorRect:
-	"""Retourne l'overlay de transition pour le SceneLoader"""
 	return transition_overlay
 
 func show_notification(message: String, type: String = "info", duration: float = NOTIFICATION_DURATION) -> void:
-	"""Affiche une notification"""
-	
-	# Limiter le nombre de notifications
 	while active_notifications.size() >= MAX_NOTIFICATIONS:
 		var oldest = active_notifications.pop_front()
 		if oldest and is_instance_valid(oldest):
 			oldest.queue_free()
 	
-	# Créer la notification
 	var notif = _create_notification_panel(message, type)
 	notification_container.add_child(notif)
 	active_notifications.append(notif)
 	
-	# Animation d'apparition
 	notif.modulate.a = 0.0
 	notif.position.x = 50
 	
@@ -209,7 +236,6 @@ func show_notification(message: String, type: String = "info", duration: float =
 	tween.tween_property(notif, "modulate:a", 1.0, NOTIFICATION_FADE)
 	tween.tween_property(notif, "position:x", 0.0, NOTIFICATION_FADE)
 	
-	# Timer de disparition
 	await get_tree().create_timer(duration).timeout
 	
 	if is_instance_valid(notif):
@@ -222,12 +248,9 @@ func show_notification(message: String, type: String = "info", duration: float =
 		)
 
 func _create_notification_panel(message: String, type: String) -> PanelContainer:
-	"""Crée un panel de notification stylisé"""
-	
 	var panel = PanelContainer.new()
 	panel.custom_minimum_size = Vector2(300, 0)
 	
-	# Style selon le type
 	var style = StyleBoxFlat.new()
 	style.corner_radius_top_left = 8
 	style.corner_radius_top_right = 8
@@ -245,13 +268,12 @@ func _create_notification_panel(message: String, type: String) -> PanelContainer
 		"error":
 			style.bg_color = Color(0.3, 0.1, 0.1, 0.95)
 			style.border_color = Color(0.9, 0.3, 0.3)
-		_:  # info
+		_:
 			style.bg_color = Color(0.1, 0.15, 0.25, 0.95)
 			style.border_color = Color(0.4, 0.6, 0.9)
 	
 	panel.add_theme_stylebox_override("panel", style)
 	
-	# Contenu
 	var margin = MarginContainer.new()
 	margin.add_theme_constant_override("margin_left", 15)
 	margin.add_theme_constant_override("margin_top", 10)
@@ -267,35 +289,25 @@ func _create_notification_panel(message: String, type: String) -> PanelContainer
 	return panel
 
 func show_loading(text: String = "Chargement...") -> void:
-	"""Affiche l'écran de chargement"""
-	
 	loading_label.text = text
 	loading_progress_bar.value = 0
 	loading_screen.visible = true
 	is_loading_visible = true
 
 func hide_loading() -> void:
-	"""Cache l'écran de chargement"""
-	
 	loading_screen.visible = false
 	is_loading_visible = false
 
 func update_loading_progress(progress: float) -> void:
-	"""Met à jour la barre de progression"""
-	
 	loading_progress_bar.value = progress * 100
 
 func show_pause_menu() -> void:
-	"""Affiche le menu de pause"""
 	pause_menu.visible = true
 
 func hide_pause_menu() -> void:
-	"""Cache le menu de pause"""
 	pause_menu.visible = false
 
 func toggle_pause_menu() -> void:
-	"""Inverse la visibilité du menu de pause"""
-	
 	if pause_menu.visible:
 		hide_pause_menu()
 	else:
@@ -306,7 +318,6 @@ func toggle_pause_menu() -> void:
 # ============================================================================
 
 func _on_notification_posted(message: String, type: String) -> void:
-	"""Callback des notifications via EventBus"""
 	show_notification(message, type)
 
 # ============================================================================
@@ -319,7 +330,6 @@ func _on_resume_pressed() -> void:
 		GameRoot.game_manager.pause_game(false)
 
 func _on_options_pressed() -> void:
-	# TODO: Ouvrir les options
 	show_notification("Options (à implémenter)", "info")
 
 func _on_main_menu_pressed() -> void:
@@ -341,7 +351,6 @@ func _on_quit_pressed() -> void:
 func _input(event: InputEvent) -> void:
 	if event.is_action_pressed("ui_cancel"):
 		if GameRoot and GameRoot.game_manager:
-			# Seulement si on n'est pas au menu principal
 			var current_id = GameRoot.game_manager.get_current_scene_id()
 			if current_id != SceneRegistry.SceneID.MAIN_MENU:
 				GameRoot.game_manager.toggle_pause()

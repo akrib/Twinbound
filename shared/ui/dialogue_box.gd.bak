@@ -1,0 +1,407 @@
+extends Control
+## DialogueBox - Interface utilisateur du système de dialogue
+## Supporte BBCode, effets de texte, portraits, choix multiples
+
+class_name DialogueBox
+
+# ============================================================================
+# SIGNAUX
+# ============================================================================
+
+signal text_reveal_started()
+signal text_reveal_completed()
+signal choice_hovered(index: int)
+signal choice_selected(index: int)
+
+# ============================================================================
+# RÉFÉRENCES UI
+# ============================================================================
+
+@onready var dialogue_panel: PanelContainer = $DialoguePanel
+@onready var speaker_label: Label = $DialoguePanel/MarginContainer/VBoxContainer/SpeakerLabel
+@onready var text_label: RichTextLabel = $DialoguePanel/MarginContainer/VBoxContainer/TextLabel
+@onready var portrait: TextureRect = $DialoguePanel/MarginContainer/HBoxContainer/Portrait
+@onready var choices_container: VBoxContainer = $DialoguePanel/MarginContainer/VBoxContainer/ChoicesContainer
+@onready var continue_indicator: Label = $DialoguePanel/ContinueIndicator
+
+# Son
+@onready var voice_player: AudioStreamPlayer = $VoicePlayer
+@onready var advance_sfx: AudioStreamPlayer = $AdvanceSFX
+
+# ============================================================================
+# CONFIGURATION
+# ============================================================================
+
+@export var default_text_speed: float = 50.0
+@export var fade_duration: float = 0.3
+@export var portrait_size: Vector2 = Vector2(128, 128)
+@export var enable_typewriter: bool = true
+@export var enable_bbcode: bool = true
+
+# ============================================================================
+# ÉTAT
+# ============================================================================
+
+var dialogue_manager: DialogueManagerClass = null
+var current_line: Dictionary = {}
+var is_text_revealing: bool = false
+var text_reveal_tween: Tween = null
+
+var visible_characters: int = 0
+var total_characters: int = 0
+var reveal_speed: float = 50.0
+
+# Choix
+var choice_buttons: Array[Button] = []
+var selected_choice_index: int = 0
+
+# ============================================================================
+# INITIALISATION
+# ============================================================================
+
+func _ready() -> void:
+	# ✅ CORRECTION : Forcer l'état invisible au démarrage
+	visible = false
+	modulate.a = 0.0
+	
+	# BBCode activé
+	if text_label:
+		text_label.bbcode_enabled = enable_bbcode
+		text_label.visible_characters = 0
+	
+	# Indicateur de continuation
+	if continue_indicator:
+		continue_indicator.visible = false
+		_animate_continue_indicator()
+	
+	print("[DialogueBox] ✅ Initialisée - visible:", visible, " modulate.a:", modulate.a)
+
+# ============================================================================
+# AFFICHAGE
+# ============================================================================
+
+func show_dialogue_box() -> void:
+	"""Affiche la boîte de dialogue avec animation"""
+	
+	visible = true
+	modulate.a = 0.0
+	
+	var tween = create_tween()
+	tween.tween_property(self, "modulate:a", 1.0, fade_duration)
+
+func hide_dialogue_box() -> void:
+	"""Cache la boîte de dialogue avec animation"""
+	
+	var tween = create_tween()
+	tween.tween_property(self, "modulate:a", 0.0, fade_duration)
+	tween.tween_callback(func(): visible = false)
+
+func display_line(line: Dictionary) -> void:
+	"""Affiche une ligne de dialogue"""
+	
+	current_line = line
+	
+	# ✅ Cacher l'indicateur au début
+	if continue_indicator:
+		continue_indicator.visible = false
+	# Nettoyer les choix précédents
+	_clear_choices()
+	
+	# Nom du personnage
+	var speaker = line.get("speaker", "")
+	var speaker_key = line.get("speaker_key", "")
+	
+	if speaker_key:
+		speaker = tr(speaker_key)
+	
+	speaker_label.text = speaker
+	speaker_label.visible = speaker != ""
+	
+	# Portrait
+	if line.has("portrait"):
+		_set_portrait(line.portrait)
+	else:
+		portrait.visible = false
+	
+	# Texte
+	var text = line.get("text", "")
+	var text_key = line.get("text_key", "")
+	
+	if text_key:
+		text = tr(text_key)
+	
+	# Appliquer les effets BBCode
+	text = _apply_effects(text, line.get("effects", []))
+	
+	# Vitesse de révélation
+	reveal_speed = line.get("speed", default_text_speed)
+	
+	# Afficher le texte
+	if enable_typewriter:
+		_reveal_text(text)
+	else:
+		text_label.text = text
+		text_label.visible_characters = -1
+		_on_text_reveal_completed()
+	
+	# Son de voix
+	if line.has("voice_sfx"):
+		_play_voice(line.voice_sfx)
+
+func display_choices(choices: Array) -> void:
+	"""Affiche des choix"""
+	
+	_clear_choices()
+	
+	for i in range(choices.size()):
+		var choice = choices[i]
+		var choice_text = choice.get("text", "Choice " + str(i))
+		var choice_key = choice.get("text_key", "")
+		
+		if choice_key:
+			choice_text = tr(choice_key)
+		
+		var button = Button.new()
+		button.text = choice_text
+		button.custom_minimum_size = Vector2(0, 40)
+		button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		
+		# Connexions
+		var choice_index = i
+		button.pressed.connect(func(): _on_choice_selected(choice_index))
+		button.mouse_entered.connect(func(): _on_choice_hovered(choice_index))
+		
+		choices_container.add_child(button)
+		choice_buttons.append(button)
+	
+	# Sélectionner le premier par défaut
+	if not choice_buttons.is_empty():
+		choice_buttons[0].grab_focus()
+		selected_choice_index = 0
+	
+	choices_container.visible = true
+	continue_indicator.visible = false
+
+# ============================================================================
+# RÉVÉLATION DE TEXTE (Typewriter)
+# ============================================================================
+
+func _reveal_text(text: String) -> void:
+	"""Révèle progressivement le texte"""
+	
+	is_text_revealing = true
+	text_label.text = text
+	text_label.visible_characters = 0
+	
+	total_characters = text.length()
+	visible_characters = 0
+	
+	continue_indicator.visible = false
+	text_reveal_started.emit()
+	
+	# Annuler le tween précédent
+	if text_reveal_tween and text_reveal_tween.is_valid():
+		text_reveal_tween.kill()
+	
+	# Calculer la durée
+	var duration = total_characters / reveal_speed
+	
+	# Tween de révélation
+	text_reveal_tween = create_tween()
+	text_reveal_tween.tween_property(
+		text_label,
+		"visible_characters",
+		total_characters,
+		duration
+	).set_ease(Tween.EASE_IN_OUT)
+	
+	text_reveal_tween.finished.connect(_on_text_reveal_completed)
+
+func complete_text() -> void:
+	"""Complète instantanément le texte"""
+	
+	if not is_text_revealing:
+		return
+	
+	if text_reveal_tween and text_reveal_tween.is_valid():
+		text_reveal_tween.kill()
+	
+	text_label.visible_characters = -1
+	_on_text_reveal_completed()
+
+func _on_text_reveal_completed() -> void:
+	"""Callback quand le texte est entièrement révélé"""
+	
+	is_text_revealing = false
+	
+	# ✅ NOUVEAU: Afficher l'indicateur seulement quand le texte est complètement révélé
+	if continue_indicator:
+		continue_indicator.visible = true
+		# Petite animation pour attirer l'attention
+		continue_indicator.modulate.a = 0.0
+		var tween = create_tween()
+		tween.tween_property(continue_indicator, "modulate:a", 1.0, 0.3)
+	
+	text_reveal_completed.emit()
+	
+# ============================================================================
+# EFFETS BBCode
+# ============================================================================
+
+func _apply_effects(text: String, effects: Array) -> String:
+	"""Applique les effets BBCode au texte"""
+	
+	for effect in effects:
+		match effect:
+			"shake":
+				text = "[shake rate=20 level=5]" + text + "[/shake]"
+			"wave":
+				text = "[wave amp=50 freq=2]" + text + "[/wave]"
+			"rainbow":
+				text = "[rainbow freq=0.2 sat=0.8 val=0.8]" + text + "[/rainbow]"
+			"tornado":
+				text = "[tornado radius=5 freq=2]" + text + "[/tornado]"
+			"fade":
+				text = "[fade start=0 length=20]" + text + "[/fade]"
+	
+	return text
+
+# ============================================================================
+# PORTRAIT
+# ============================================================================
+
+func _set_portrait(portrait_path: String) -> void:
+	"""Définit le portrait du personnage"""
+	
+	if not ResourceLoader.exists(portrait_path):
+		portrait.visible = false
+		return
+	
+	var texture = load(portrait_path)
+	
+	if texture is Texture2D:
+		portrait.texture = texture
+		portrait.custom_minimum_size = portrait_size
+		portrait.visible = true
+	else:
+		portrait.visible = false
+
+# ============================================================================
+# CHOIX
+# ============================================================================
+
+func _clear_choices() -> void:
+	"""Efface tous les boutons de choix"""
+	
+	for button in choice_buttons:
+		button.queue_free()
+	
+	choice_buttons.clear()
+	choices_container.visible = false
+
+func _on_choice_selected(index: int) -> void:
+	"""Callback quand un choix est sélectionné"""
+	
+	if advance_sfx:
+		advance_sfx.play()
+	
+	choice_selected.emit(index)
+	
+	if dialogue_manager:
+		dialogue_manager.select_choice(index)
+
+func _on_choice_hovered(index: int) -> void:
+	"""Callback quand la souris survole un choix"""
+	
+	selected_choice_index = index
+	choice_hovered.emit(index)
+
+# ============================================================================
+# AUDIO
+# ============================================================================
+
+func _play_voice(voice_path: String) -> void:
+	"""Joue un son de voix"""
+	
+	if not ResourceLoader.exists(voice_path):
+		return
+	
+	var stream = load(voice_path)
+	
+	if stream is AudioStream and voice_player:
+		voice_player.stream = stream
+		voice_player.play()
+
+# ============================================================================
+# ANIMATIONS
+# ============================================================================
+
+func _animate_continue_indicator() -> void:
+	"""Anime l'indicateur de continuation"""
+	
+	if not continue_indicator:
+		return
+	
+	var tween = create_tween()
+	tween.set_loops()
+	tween.tween_property(continue_indicator, "modulate:a", 0.3, 0.5)
+	tween.tween_property(continue_indicator, "modulate:a", 1.0, 0.5)
+
+# ============================================================================
+# INPUT
+# ============================================================================
+
+func _input(event: InputEvent) -> void:
+	"""Gestion simplifiée de l'input du dialogue"""
+	
+	# Vérifications de base
+	if not visible or not dialogue_manager or not dialogue_manager.is_active():
+		return
+	
+	# ===== GESTION DES CHOIX =====
+	if choices_container.visible and not choice_buttons.is_empty():
+		if event.is_action_pressed("ui_up"):
+			selected_choice_index = (selected_choice_index - 1 + choice_buttons.size()) % choice_buttons.size()
+			choice_buttons[selected_choice_index].grab_focus()
+			get_viewport().set_input_as_handled()
+			return
+		
+		if event.is_action_pressed("ui_down"):
+			selected_choice_index = (selected_choice_index + 1) % choice_buttons.size()
+			choice_buttons[selected_choice_index].grab_focus()
+			get_viewport().set_input_as_handled()
+			return
+		
+		# Ne pas gérer l'avancement si on affiche des choix
+		return
+	
+	# ===== GESTION DE L'AVANCEMENT =====
+	var should_advance = false
+	
+	# Clic gauche de la souris
+	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+		should_advance = true
+	
+	# Touches d'acceptation (Espace, Entrée)
+	if event.is_action_pressed("ui_accept"):
+		should_advance = true
+	
+	if should_advance:
+		# Si le texte est en train de se révéler, le compléter immédiatement
+		if is_text_revealing:
+			print("[DialogueBox] ⏩ Complétion du texte")
+			complete_text()
+		# Sinon, avancer au dialogue suivant
+		else:
+			print("[DialogueBox] ➡️ Avancement demandé")
+			dialogue_manager.advance_dialogue()
+		
+		get_viewport().set_input_as_handled()
+
+# ============================================================================
+# NETTOYAGE
+# ============================================================================
+
+func _exit_tree() -> void:
+	if text_reveal_tween and text_reveal_tween.is_valid():
+		text_reveal_tween.kill()

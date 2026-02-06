@@ -1,5 +1,5 @@
 extends Control
-class_name DialogueBox
+class_name DialogueBoxClass
 ## Boîte de dialogue UI - à étendre ou utiliser directement
 
 # ============================================================================

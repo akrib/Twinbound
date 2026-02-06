@@ -1,6 +1,9 @@
 extends Control
 ## Menu Principal - Point d'entrée du jeu
-## Utilise SceneLoader pour les transitions et EventBus pour la communication
+##
+## Le bouton "Nouvelle Partie" émet game_started via EventBus.
+## CampaignManager reçoit ce signal et orchestre la séquence d'intro
+## (dialogues via DialogueManager, UI via UIManager, puis transition vers WorldMap)
 
 class_name MainMenu
 
@@ -13,81 +16,37 @@ class_name MainMenu
 @onready var title_label: Label = $MarginContainer/VBoxContainer/TitleLabel
 @onready var version_label: Label = $MarginContainer/VBoxContainer/VersionLabel
 
-# État
 var has_save: bool = false
 
 func _ready() -> void:
-	# Vérifier les sauvegardes disponibles
 	_check_save_availability()
-	
-	# Connexion à l'EventBus
-	GameRoot.event_bus.safe_connect("game_started", _on_game_started)
-	GameRoot.event_bus.safe_connect("game_loaded", _on_game_loaded)
-	
-	# Animation d'entrée
+	_connect_buttons()
 	_play_intro_animation()
 	
-	print("[MainMenu] Initialisé")
-
-## Auto-connexion des signaux via SceneLoader
-func _get_signal_connections() -> Array:
-	"""
-	Retourne une liste de connexions de signaux pour SceneLoader.
-	Cette méthode est appelée automatiquement par SceneLoader.
-	"""
-	if not is_node_ready():
-		return []
+	if GameRoot and GameRoot.event_bus:
+		GameRoot.event_bus.safe_connect("game_started", _on_game_started)
+		GameRoot.event_bus.safe_connect("game_loaded", _on_game_loaded)
 	
-	return [
-		{
-			"source": start_button,
-			"signal_name": "pressed",
-			"target": self,
-			"method": "_on_start_pressed"
-		},
-		{
-			"source": continue_button,
-			"signal_name": "pressed",
-			"target": self,
-			"method": "_on_continue_pressed"
-		},
-		{
-			"source": options_button,
-			"signal_name": "pressed",
-			"target": self,
-			"method": "_on_options_pressed"
-		},
-		{
-			"source": credits_button,
-			"signal_name": "pressed",
-			"target": self,
-			"method": "_on_credits_pressed"
-		},
-		{
-			"source": quit_button,
-			"signal_name": "pressed",
-			"target": self,
-			"method": "_on_quit_pressed"
-		},
-	]
+	print("[MainMenu] ✅ Initialisé")
 
-# ============================================================================
-# INITIALISATION
-# ============================================================================
+func _connect_buttons() -> void:
+	"""Connecte les boutons manuellement"""
+	start_button.pressed.connect(_on_start_pressed)
+	continue_button.pressed.connect(_on_continue_pressed)
+	options_button.pressed.connect(_on_options_pressed)
+	credits_button.pressed.connect(_on_credits_pressed)
+	quit_button.pressed.connect(_on_quit_pressed)
 
 func _check_save_availability() -> void:
-	"""Vérifie si une sauvegarde existe"""
-	# TODO: Implémenter la vérification réelle des sauvegardes
 	has_save = false
+	if GameRoot and GameRoot.game_manager:
+		has_save = GameRoot.game_manager.has_save("auto_save")
 	
-	# Désactiver le bouton Continuer si pas de sauvegarde
 	continue_button.disabled = not has_save
-	
 	if not has_save:
 		continue_button.modulate.a = 0.5
 
 func _play_intro_animation() -> void:
-	"""Animation d'entrée du menu"""
 	title_label.modulate.a = 0.0
 	
 	var tween = create_tween()
@@ -100,78 +59,60 @@ func _play_intro_animation() -> void:
 # ============================================================================
 
 func _on_start_pressed() -> void:
-	"""Démarrer une nouvelle partie"""
-	print("[MainMenu] Nouvelle partie")
+	"""Nouvelle partie : émet game_started, CampaignManager gère la suite"""
+	print("[MainMenu] ▶ Nouvelle partie")
 	
-	# Notification
-	GameRoot.event_bus.notify("Démarrage d'une nouvelle partie...", "info")
-	
-	# Émettre l'événement de début de jeu
-	GameRoot.event_bus.game_started.emit()
-	
-	# Transition vers la carte du monde
-	GameRoot.event_bus.change_scene(SceneRegistry.SceneID.WORLD_MAP)
+	if GameRoot and GameRoot.event_bus:
+		GameRoot.event_bus.notify("Démarrage d'une nouvelle partie...", "info")
+		# CampaignManager écoute ce signal et lance la séquence d'intro
+		# puis transite vers la WorldMap automatiquement
+		GameRoot.event_bus.game_started.emit()
 
 func _on_continue_pressed() -> void:
-	"""Continuer la dernière sauvegarde"""
 	if not has_save:
 		return
 	
-	print("[MainMenu] Chargement de la dernière sauvegarde")
+	print("[MainMenu] ↻ Chargement de la dernière sauvegarde")
 	
-	# TODO: Charger la sauvegarde via GameManager
-	GameRoot.event_bus.notify("Chargement de la partie...", "info")
-	GameRoot.game_manager.load_game("auto_save")
-	
-	# Transition vers la scène sauvegardée
-	GameRoot.event_bus.change_scene(SceneRegistry.SceneID.WORLD_MAP)
+	if GameRoot:
+		GameRoot.event_bus.notify("Chargement de la partie...", "info")
+		GameRoot.game_manager.load_game("auto_save")
 
 func _on_options_pressed() -> void:
-	"""Ouvrir le menu des options"""
-	print("[MainMenu] Options")
-	GameRoot.event_bus.notify("Options (à implémenter)", "info")
-	
-	# TODO: Quand la scène options sera créée
-	# GameRoot.event_bus.change_scene(SceneRegistry.SceneID.OPTIONS_MENU)
+	print("[MainMenu] ⚙ Options")
+	if GameRoot and GameRoot.event_bus:
+		GameRoot.event_bus.notify("Options (à implémenter)", "info")
 
 func _on_credits_pressed() -> void:
-	"""Afficher les crédits"""
-	print("[MainMenu] Crédits")
-	GameRoot.event_bus.notify("Crédits (à implémenter)", "info")
-	
-	# TODO: Quand la scène crédits sera créée
-	# GameRoot.event_bus.change_scene(SceneRegistry.SceneID.CREDITS)
+	print("[MainMenu] ℹ Crédits")
+	if GameRoot and GameRoot.event_bus:
+		GameRoot.event_bus.notify("Crédits (à implémenter)", "info")
 
 func _on_quit_pressed() -> void:
-	"""Quitter le jeu"""
-	print("[MainMenu] Quitter le jeu")
+	print("[MainMenu] ✕ Quitter le jeu")
 	
-	# Animation de sortie
 	var tween = create_tween()
 	tween.tween_property(self, "modulate:a", 0.0, 0.3)
 	await tween.finished
 	
-	# Émettre la demande de fermeture via EventBus
-	GameRoot.event_bus.quit_game_requested.emit()
+	if GameRoot and GameRoot.event_bus:
+		GameRoot.event_bus.quit_game_requested.emit()
 
 # ============================================================================
 # CALLBACKS EVENTBUS
 # ============================================================================
 
 func _on_game_started() -> void:
-	"""Réaction au démarrage du jeu"""
 	print("[MainMenu] Le jeu démarre (EventBus)")
 
 func _on_game_loaded(save_name: String) -> void:
-	"""Réaction au chargement d'une sauvegarde"""
-	print("[MainMenu] Sauvegarde chargée : ", save_name)
+	print("[MainMenu] Sauvegarde chargée : %s" % save_name)
 
 # ============================================================================
 # INPUT
 # ============================================================================
 
 func _input(event: InputEvent) -> void:
-	# Raccourci clavier pour démarrer rapidement (DEBUG)
 	if OS.is_debug_build():
 		if event.is_action_pressed("ui_accept") and not event.is_echo():
 			_on_start_pressed()
@@ -181,6 +122,5 @@ func _input(event: InputEvent) -> void:
 # ============================================================================
 
 func _exit_tree() -> void:
-	"""Nettoyage à la fermeture de la scène"""
-	GameRoot.event_bus.disconnect_all(self)
-	print("[MainMenu] Scène nettoyée")
+	if GameRoot and GameRoot.event_bus:
+		GameRoot.event_bus.disconnect_all(self)
