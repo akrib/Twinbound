@@ -3,9 +3,20 @@ extends CanvasLayer
 ## Gère les notifications, l'écran de chargement, les menus globaux
 ## et la DialogueBox persistante (toujours en mémoire)
 ##
+## Fournit des méthodes pour créer des UI standardisées
+##
 ## Accès via : GameRoot.ui_manager
 
 class_name UIManagerClass
+
+# ============================================================================
+# DÉPENDANCES
+# ============================================================================
+
+const UITheme = preload("res://core/ui/ui_theme.gd")
+const ThemedPanel = preload("res://core/ui/base_panel.gd")
+const ThemedButton = preload("res://core/ui/base_button.gd")
+const ThemedLabel = preload("res://core/ui/base_label.gd")
 
 # ============================================================================
 # CONFIGURATION
@@ -16,7 +27,7 @@ const NOTIFICATION_FADE: float = 0.3
 const MAX_NOTIFICATIONS: int = 5
 
 # ============================================================================
-# RÉFÉRENCES UI
+# RÉFÉRENCES UI GLOBALES
 # ============================================================================
 
 var notification_container: VBoxContainer = null
@@ -25,7 +36,14 @@ var loading_progress_bar: ProgressBar = null
 var loading_label: Label = null
 var pause_menu: Control = null
 var transition_overlay: ColorRect = null
-var dialogue_box: DialogueBoxClass = null  # ← NOUVEAU : DialogueBox persistante
+var dialogue_box: DialogueBoxClass = null
+
+# ============================================================================
+# CONTENEURS POUR UI DE SCÈNE
+# ============================================================================
+
+var scene_ui_container: Control = null  # Conteneur pour les UI spécifiques aux scènes
+var scene_ui_cache: Dictionary = {}  # Cache des UI de scène
 
 # ============================================================================
 # ÉTAT
@@ -42,22 +60,31 @@ func _ready() -> void:
 	layer = 90
 	name = "UIManager"
 	
+	_create_scene_ui_container()
 	_create_transition_layer()
 	_create_notification_system()
 	_create_loading_screen()
 	_create_pause_menu()
-	_create_dialogue_box()  # ← NOUVEAU
+	_create_dialogue_box()
 	
-	print("[UIManager] ✅ Initialisé (avec DialogueBox persistante)")
+	print("[UIManager] ✅ Initialisé (avec DialogueBox persistante et UI factory)")
+
+func _create_scene_ui_container() -> void:
+	"""Crée le conteneur pour les UI spécifiques aux scènes"""
+	scene_ui_container = Control.new()
+	scene_ui_container.name = "SceneUIContainer"
+	scene_ui_container.set_anchors_preset(Control.PRESET_FULL_RECT)
+	scene_ui_container.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	scene_ui_container.z_index = 50  # Entre les scènes et les menus globaux
+	add_child(scene_ui_container)
 
 # ============================================================================
-# DIALOGUE BOX PERSISTANTE
+# DIALOGUE BOX PERSISTANTE (identique à l'original)
 # ============================================================================
 
 func _create_dialogue_box() -> void:
 	"""Crée la DialogueBox persistante accessible par DialogueManager"""
 	
-	# Charger depuis .tscn si disponible
 	var dialogue_box_scene_path = "res://core/dialogue/dialogue_box.tscn"
 	
 	if ResourceLoader.exists(dialogue_box_scene_path):
@@ -65,7 +92,6 @@ func _create_dialogue_box() -> void:
 		dialogue_box = packed.instantiate() as DialogueBoxClass
 		print("[UIManager]   → DialogueBox chargée depuis .tscn")
 	else:
-		# Fallback : créer programmatiquement
 		dialogue_box = DialogueBoxClass.new()
 		dialogue_box.set_anchors_preset(Control.PRESET_FULL_RECT)
 		dialogue_box.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -73,25 +99,22 @@ func _create_dialogue_box() -> void:
 	
 	dialogue_box.name = "PersistentDialogueBox"
 	dialogue_box.visible = false
-	dialogue_box.z_index = 60  # Au-dessus des scènes, sous le pause menu
+	dialogue_box.z_index = 60
 	add_child(dialogue_box)
 
 func get_dialogue_box() -> DialogueBoxClass:
-	"""Retourne la DialogueBox persistante"""
 	return dialogue_box
 
 func show_dialogue_box() -> void:
-	"""Affiche la DialogueBox"""
 	if dialogue_box:
 		dialogue_box.show_dialogue_box()
 
 func hide_dialogue_box() -> void:
-	"""Cache la DialogueBox"""
 	if dialogue_box:
 		dialogue_box.hide_dialogue_box()
 
 # ============================================================================
-# TRANSITION LAYER
+# SYSTÈMES GLOBAUX (identiques à l'original)
 # ============================================================================
 
 func _create_transition_layer() -> void:
@@ -103,10 +126,6 @@ func _create_transition_layer() -> void:
 	transition_overlay.modulate.a = 0.0
 	transition_overlay.z_index = 100
 	add_child(transition_overlay)
-
-# ============================================================================
-# NOTIFICATIONS
-# ============================================================================
 
 func _create_notification_system() -> void:
 	notification_container = VBoxContainer.new()
@@ -129,7 +148,7 @@ func _create_loading_screen() -> void:
 	add_child(loading_screen)
 	
 	var bg = ColorRect.new()
-	bg.color = Color(0.05, 0.05, 0.08, 0.95)
+	bg.color = UITheme.COLORS.panel_bg_dark
 	bg.set_anchors_preset(Control.PRESET_FULL_RECT)
 	loading_screen.add_child(bg)
 	
@@ -144,7 +163,7 @@ func _create_loading_screen() -> void:
 	loading_label = Label.new()
 	loading_label.text = "Chargement..."
 	loading_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	loading_label.add_theme_font_size_override("font_size", 32)
+	loading_label.add_theme_font_size_override("font_size", UITheme.FONT_SIZES.title)
 	vbox.add_child(loading_label)
 	
 	loading_progress_bar = ProgressBar.new()
@@ -169,56 +188,176 @@ func _create_pause_menu() -> void:
 	center.set_anchors_preset(Control.PRESET_FULL_RECT)
 	pause_menu.add_child(center)
 	
-	var panel = PanelContainer.new()
+	var panel = ThemedPanel.new()
+	panel.panel_style = ThemedPanel.PanelStyle.DEFAULT
 	center.add_child(panel)
-	
-	var margin = MarginContainer.new()
-	margin.add_theme_constant_override("margin_left", 40)
-	margin.add_theme_constant_override("margin_top", 40)
-	margin.add_theme_constant_override("margin_right", 40)
-	margin.add_theme_constant_override("margin_bottom", 40)
-	panel.add_child(margin)
 	
 	var vbox = VBoxContainer.new()
 	vbox.add_theme_constant_override("separation", 15)
-	margin.add_child(vbox)
+	panel.add_content(vbox)
 	
-	var title = Label.new()
-	title.text = "PAUSE"
+	var title = ThemedLabel.new()
+	title.label_style = ThemedLabel.LabelStyle.TITLE
+	title.label_text = "PAUSE"
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	title.add_theme_font_size_override("font_size", 48)
 	vbox.add_child(title)
 	
-	var resume_btn = Button.new()
-	resume_btn.text = "Reprendre"
-	resume_btn.custom_minimum_size = Vector2(200, 50)
-	resume_btn.pressed.connect(_on_resume_pressed)
+	var resume_btn = create_button("Reprendre", _on_resume_pressed)
 	vbox.add_child(resume_btn)
 	
-	var options_btn = Button.new()
-	options_btn.text = "Options"
-	options_btn.custom_minimum_size = Vector2(200, 50)
-	options_btn.pressed.connect(_on_options_pressed)
+	var options_btn = create_button("Options", _on_options_pressed)
 	vbox.add_child(options_btn)
 	
-	var menu_btn = Button.new()
-	menu_btn.text = "Menu Principal"
-	menu_btn.custom_minimum_size = Vector2(200, 50)
-	menu_btn.pressed.connect(_on_main_menu_pressed)
+	var menu_btn = create_button("Menu Principal", _on_main_menu_pressed)
 	vbox.add_child(menu_btn)
 	
-	var quit_btn = Button.new()
-	quit_btn.text = "Quitter"
-	quit_btn.custom_minimum_size = Vector2(200, 50)
-	quit_btn.pressed.connect(_on_quit_pressed)
+	var quit_btn = create_button("Quitter", _on_quit_pressed)
 	vbox.add_child(quit_btn)
 
 # ============================================================================
-# API PUBLIQUE
+# FACTORY METHODS - CRÉATION D'UI STANDARDISÉES
 # ============================================================================
 
-func create_transition_overlay() -> ColorRect:
-	return transition_overlay
+func create_panel(
+	style: ThemedPanel.PanelStyle = ThemedPanel.PanelStyle.DEFAULT,
+	auto_margin: bool = true
+) -> ThemedPanel:
+	"""Crée un panel standardisé"""
+	var panel = ThemedPanel.new()
+	panel.panel_style = style
+	panel.auto_margin = auto_margin
+	return panel
+
+func create_button(
+	button_text: String,
+	callback: Callable,
+	icon_path: String = "",
+	min_width: int = 200,
+	min_height: int = 50
+) -> ThemedButton:
+	"""Crée un bouton standardisé"""
+	var button = ThemedButton.new()
+	button.button_text = button_text
+	button.icon_path = icon_path
+	button.min_width = min_width
+	button.min_height = min_height
+	button.pressed.connect(callback)
+	return button
+
+func create_label(
+	label_text: String,
+	style: ThemedLabel.LabelStyle = ThemedLabel.LabelStyle.NORMAL
+) -> ThemedLabel:
+	"""Crée un label standardisé"""
+	var label = ThemedLabel.new()
+	label.label_text = label_text
+	label.label_style = style
+	return label
+
+func create_action_menu(position: Vector2 = Vector2.ZERO) -> PopupPanel:
+	"""Crée un menu d'actions (contexte) standardisé"""
+	var popup = PopupPanel.new()
+	popup.name = "ActionMenu"
+	popup.visible = false
+	popup.popup_window = false
+	popup.transparent_bg = false
+	popup.borderless = false
+	
+	var style = UITheme.create_panel_style()
+	popup.add_theme_stylebox_override("panel", style)
+	
+	var margin = MarginContainer.new()
+	margin.name = "MarginContainer"  # ← Nom explicite
+	margin.add_theme_constant_override("margin_left", UITheme.SIZES.margin_small)
+	margin.add_theme_constant_override("margin_top", UITheme.SIZES.margin_small)
+	margin.add_theme_constant_override("margin_right", UITheme.SIZES.margin_small)
+	margin.add_theme_constant_override("margin_bottom", UITheme.SIZES.margin_small)
+	popup.add_child(margin)
+	
+	var vbox = VBoxContainer.new()
+	vbox.name = "VBoxContainer"  # ← Nom explicite
+	vbox.custom_minimum_size = Vector2(220, 100)
+	vbox.add_theme_constant_override("separation", 5)
+	margin.add_child(vbox)
+	
+	scene_ui_container.add_child(popup)
+	
+	if position != Vector2.ZERO:
+		popup.position = position
+	
+	return popup
+
+func create_top_bar(title: String = "") -> Control:
+	"""Crée une barre supérieure standardisée"""
+	var bar = ThemedPanel.new()
+	bar.name = "TopBar"
+	bar.panel_style = ThemedPanel.PanelStyle.DARK
+	bar.set_anchors_preset(Control.PRESET_TOP_WIDE)
+	bar.offset_bottom = 80
+	
+	var hbox = HBoxContainer.new()
+	hbox.name = "HBoxContainer"  # ← Nom explicite
+	hbox.add_theme_constant_override("separation", 40)
+	bar.add_content(hbox)
+	
+	if title != "":
+		var title_label = create_label(title, ThemedLabel.LabelStyle.TITLE)
+		title_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		hbox.add_child(title_label)
+	
+	return bar
+
+func create_bottom_bar() -> Control:
+	"""Crée une barre inférieure standardisée"""
+	var bar = ThemedPanel.new()
+	bar.name = "BottomBar"
+	bar.panel_style = ThemedPanel.PanelStyle.DARK
+	bar.set_anchors_preset(Control.PRESET_BOTTOM_WIDE)
+	bar.anchor_top = 1.0
+	bar.offset_top = -120
+	
+	var hbox = HBoxContainer.new()
+	hbox.name = "HBoxContainer"  # ← Nom explicite
+	hbox.add_theme_constant_override("separation", 20)
+	bar.add_content(hbox)
+	
+	return bar
+
+# ============================================================================
+# GESTION DES UI DE SCÈNE
+# ============================================================================
+
+func register_scene_ui(scene_id: String, ui_node: Control) -> void:
+	"""Enregistre une UI spécifique à une scène"""
+	scene_ui_cache[scene_id] = ui_node
+	scene_ui_container.add_child(ui_node)
+	ui_node.visible = false
+
+func show_scene_ui(scene_id: String) -> void:
+	"""Affiche l'UI d'une scène"""
+	if scene_ui_cache.has(scene_id):
+		scene_ui_cache[scene_id].visible = true
+
+func hide_scene_ui(scene_id: String) -> void:
+	"""Cache l'UI d'une scène"""
+	if scene_ui_cache.has(scene_id):
+		scene_ui_cache[scene_id].visible = false
+
+func hide_all_scene_ui() -> void:
+	"""Cache toutes les UI de scène"""
+	for ui in scene_ui_cache.values():
+		ui.visible = false
+
+func remove_scene_ui(scene_id: String) -> void:
+	"""Supprime l'UI d'une scène"""
+	if scene_ui_cache.has(scene_id):
+		var ui = scene_ui_cache[scene_id]
+		ui.queue_free()
+		scene_ui_cache.erase(scene_id)
+
+# ============================================================================
+# NOTIFICATIONS
+# ============================================================================
 
 func show_notification(message: String, type: String = "info", duration: float = NOTIFICATION_DURATION) -> void:
 	while active_notifications.size() >= MAX_NOTIFICATIONS:
@@ -253,27 +392,24 @@ func _create_notification_panel(message: String, type: String) -> PanelContainer
 	var panel = PanelContainer.new()
 	panel.custom_minimum_size = Vector2(300, 0)
 	
-	var style = StyleBoxFlat.new()
-	style.corner_radius_top_left = 8
-	style.corner_radius_top_right = 8
-	style.corner_radius_bottom_left = 8
-	style.corner_radius_bottom_right = 8
-	style.border_width_left = 4
+	var bg_color: Color
+	var border_color: Color
 	
 	match type:
 		"success":
-			style.bg_color = Color(0.1, 0.3, 0.1, 0.95)
-			style.border_color = Color(0.3, 0.8, 0.3)
+			bg_color = Color(0.1, 0.3, 0.1, 0.95)
+			border_color = UITheme.COLORS.notif_success
 		"warning":
-			style.bg_color = Color(0.3, 0.25, 0.1, 0.95)
-			style.border_color = Color(0.9, 0.7, 0.2)
+			bg_color = Color(0.3, 0.25, 0.1, 0.95)
+			border_color = UITheme.COLORS.notif_warning
 		"error":
-			style.bg_color = Color(0.3, 0.1, 0.1, 0.95)
-			style.border_color = Color(0.9, 0.3, 0.3)
+			bg_color = Color(0.3, 0.1, 0.1, 0.95)
+			border_color = UITheme.COLORS.notif_error
 		_:
-			style.bg_color = Color(0.1, 0.15, 0.25, 0.95)
-			style.border_color = Color(0.4, 0.6, 0.9)
+			bg_color = UITheme.COLORS.panel_bg
+			border_color = UITheme.COLORS.notif_info
 	
+	var style = UITheme.create_panel_style(bg_color, border_color)
 	panel.add_theme_stylebox_override("panel", style)
 	
 	var margin = MarginContainer.new()
@@ -290,6 +426,10 @@ func _create_notification_panel(message: String, type: String) -> PanelContainer
 	
 	return panel
 
+# ============================================================================
+# LOADING SCREEN
+# ============================================================================
+
 func show_loading(text: String = "Chargement...") -> void:
 	loading_label.text = text
 	loading_progress_bar.value = 0
@@ -303,6 +443,10 @@ func hide_loading() -> void:
 func update_loading_progress(progress: float) -> void:
 	loading_progress_bar.value = progress * 100
 
+# ============================================================================
+# PAUSE MENU
+# ============================================================================
+
 func show_pause_menu() -> void:
 	pause_menu.visible = true
 
@@ -314,6 +458,13 @@ func toggle_pause_menu() -> void:
 		hide_pause_menu()
 	else:
 		show_pause_menu()
+
+# ============================================================================
+# UTILITAIRES
+# ============================================================================
+
+func create_transition_overlay() -> ColorRect:
+	return transition_overlay
 
 # ============================================================================
 # CALLBACKS EVENTBUS
