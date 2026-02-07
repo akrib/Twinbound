@@ -149,7 +149,7 @@ func start_dialogue_by_id(dialogue_id: String) -> void:
 		push_warning("[DialogueManager] Dialogue introuvable : %s" % dialogue_id)
 		return
 
-	var DialogueData = preload("res://core/dialogue/dialogue_data.gd")
+	#var DialogueData = preload("res://core/dialogue/dialogue_data.gd")
 	var dialogue = DialogueData.new(dialogue_id)
 
 	# Séquences

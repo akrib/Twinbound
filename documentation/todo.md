@@ -1,11 +1,15 @@
+- [x] maj architécture
+- [x] mettre en place une récupération de la version du dernier build/action git pre-commit 
+- [x] gameroot globale
+- [x] ui_manager globale pour toute les fenetre
+- [x] creation azure hill et combat plus court pour faire des test
 - utiliser un point de repos ne fait toujours pas bouger l'unité
 -les diamant sont trop gros et mal centré 
 -le diamant de préparation ne disparait pas une fois l'attaque faite avec une unité (et ne disparait pas non plus a la fin du tour suivant si l'unité n'a pas joué et ne disparait pas non plus si on attaque)
 -la mécanique de surcharge n'a pas l'air d'etre implémenté
 -ring et type de mana a implémenté correctement dans les jsons et voir si ça fonctionne
 -trouver un spritesheet avec des armes et des éléments de mana
--maj architécture
--mettre en place une récupération de la version du dernier build/action git pre-commit 
+
 -améliorer l'effet d'aura
 -trouver un moyen de lancer le combat sans avoir a me taper l'intro a chaque fois
 -implementer la sauvegarde

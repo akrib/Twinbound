@@ -21,7 +21,7 @@ signal battle_requested(battle_id: String)
 # ============================================================================
 # CONFIGURATION
 # ============================================================================
-const DialogueData = preload("res://core/dialogue/dialogue_data.gd")
+#const DialogueData = preload("res://core/dialogue/dialogue_data.gd")
 const BATTLE_DATA_PATHS: Dictionary = {
 	"tutorial": "res://data/battles/tutorial.json",
 	"forest_battle": "res://data/battles/forest_battle.json",
@@ -186,26 +186,31 @@ func _execute_dialogue_step(step: Dictionary) -> void:
 			print("[CampaignManager] ✅ Dialogue terminé")
 
 func _execute_transition_step(step: Dictionary) -> void:
-	"""Exécute une transition vers une autre scène"""
+	"""Exécute une transition vers une autre scène et ATTEND qu'elle soit chargée"""
 	
 	var target = step.get("target", "")
-	var fade_duration = step.get("fade_duration", 1.0)
 	
 	print("[CampaignManager] 🎞️ Transition vers : %s" % target)
 	
 	var scene_map = {
 		"world_map": SceneRegistry.SceneID.WORLD_MAP,
 		"battle": SceneRegistry.SceneID.BATTLE,
-		"main_menu": SceneRegistry.SceneID.MAIN_MENU
+		"main_menu": SceneRegistry.SceneID.MAIN_MENU,
+		"cutscene": SceneRegistry.SceneID.CUTSCENE
 	}
 	
 	if not scene_map.has(target):
 		push_error("[CampaignManager] Cible de transition inconnue : %s" % target)
 		return
 	
-	# Changer de scène via SceneLoader (gère fade automatiquement)
 	if GameRoot and GameRoot.event_bus:
 		GameRoot.event_bus.change_scene(scene_map[target])
+	
+	# ← CRUCIAL : attendre que la scène soit effectivement chargée
+	if GameRoot and GameRoot.scene_loader:
+		await GameRoot.scene_loader.scene_transition_finished
+	
+	print("[CampaignManager] ✅ Transition terminée vers : %s" % target)
 
 func _execute_notification_step(step: Dictionary) -> void:
 	"""Affiche une notification"""

@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3 uid="uid://byp8xytm75beo"]
 
-[ext_resource type="Script" uid="uid://d0bmm781h8rqb" path="res://core/dialogue/dialogue_box.gd" id="1_fd1y2"]
+[ext_resource type="Script" uid="uid://dnrw4sjxqnnw5" path="res://core/dialogue/dialogue_box.gd" id="1_fd1y2"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
 bg_color = Color(0.1, 0.1, 0.12, 0.95)
@@ -14,7 +14,7 @@ corner_radius_top_right = 12
 corner_radius_bottom_right = 12
 corner_radius_bottom_left = 12
 
-[node name="DialogueBox" type="Control"]
+[node name="DialogueBox" type="Control" node_paths=PackedStringArray("speaker_label", "text_label", "portrait_texture", "choices_container", "continue_indicator")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -23,6 +23,11 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 script = ExtResource("1_fd1y2")
+speaker_label = NodePath("DialoguePanel/MarginContainer/VBoxContainer/SpeakerLabel")
+text_label = NodePath("DialoguePanel/MarginContainer/VBoxContainer/TextLabel")
+portrait_texture = NodePath("DialoguePanel/MarginContainer/HBoxContainer/Portrait")
+choices_container = NodePath("DialoguePanel/MarginContainer/VBoxContainer/ChoicesContainer")
+continue_indicator = NodePath("DialoguePanel/ContinueIndicator")
 
 [node name="DialoguePanel" type="PanelContainer" parent="."]
 layout_mode = 1

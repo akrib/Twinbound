@@ -793,6 +793,7 @@ func _handle_unit_click(unit: BattleUnit3D) -> void:
 					_deselect_unit()
 
 func _handle_terrain_click(grid_pos: Vector2i) -> void:
+	GameRoot.global_logger.debug("BATTLE", "🖱️ Clic terrain détecté à %s (état: %s)" % [grid_pos, ActionState.keys()[current_action_state]])
 	if not selected_unit:
 		return
 	
@@ -801,15 +802,16 @@ func _handle_terrain_click(grid_pos: Vector2i) -> void:
 		if current_action_state == ActionState.USING_REST:
 			# Récupérer les positions accessibles avec repos
 			var rest_positions = movement_module.calculate_single_step_positions(selected_unit)
-			
+			GameRoot.global_logger.debug("BATTLE", "🎯 Vérification repos - clic: %s, positions valides: %s" % [grid_pos, rest_positions])
 			if grid_pos not in rest_positions:
 				GameRoot.global_logger.debug("BATTLE", "Clic hors portée de repos - annulation")
 				_close_all_menus()
 				_deselect_unit()
 				return
-		
-		if movement_module.can_move_to(selected_unit, grid_pos):
-			await movement_module.move_unit(selected_unit, grid_pos)
+				
+		var bypass_check = (current_action_state == ActionState.USING_REST)
+		if movement_module.can_move_to(selected_unit, grid_pos, bypass_check):
+			await movement_module.move_unit(selected_unit, grid_pos, bypass_check)
 			
 			if current_action_state == ActionState.USING_REST:
 				GameRoot.global_logger.debug("BATTLE", "Déplacement avec repos terminé")

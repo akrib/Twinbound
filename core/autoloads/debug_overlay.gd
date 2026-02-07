@@ -25,7 +25,7 @@ var log_label: RichTextLabel = null
 # ÉTAT
 # ============================================================================
 
-var is_visible: bool = false
+var overlay_visible: bool = false
 var watched_variables: Dictionary = {}  # key -> { object: Node, property: String }
 var show_logs: bool = true
 
@@ -115,17 +115,17 @@ func _create_ui() -> void:
 
 func toggle_visibility() -> void:
 	"""Inverse la visibilité de l'overlay"""
-	is_visible = not is_visible
-	visible = is_visible
+	overlay_visible = not overlay_visible
+	visible = overlay_visible
 
 func show_overlay() -> void:
 	"""Affiche l'overlay"""
-	is_visible = true
+	overlay_visible = true
 	visible = true
 
 func hide_overlay() -> void:
 	"""Cache l'overlay"""
-	is_visible = false
+	overlay_visible = false
 	visible = false
 
 # ============================================================================
@@ -133,7 +133,7 @@ func hide_overlay() -> void:
 # ============================================================================
 
 func _process(_delta: float) -> void:
-	if not is_visible:
+	if not overlay_visible:
 		return
 	
 	_update_display()

@@ -11,11 +11,15 @@
     "current_location": "starting_village"
   },
   "start_sequence": [
-    {
-      "type": "dialogue",
-      "dialogue_id": "intro_prologue",
-      "blocking": true
-    },
+		{
+			"type": "transition",
+			"target": "cutscene"
+		},
+		{
+			"type": "dialogue",
+			"dialogue_id": "intro_prologue",
+			"blocking": true
+		},
     {
       "type": "notification",
       "message": "Bienvenue dans Tactical RPG Duos !",

@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://cbixhsjlua0ai"]
 
-[ext_resource type="Script" uid="uid://krnjeeijltk1" path="res://shared/barks/bark_label.gd" id="1_bark_label"]
+[ext_resource type="Script" uid="uid://i06jawu1k562" path="res://shared/barks/bark_label.gd" id="1_bark_label"]
 
 [node name="BarkLabel" type="Control"]
 layout_mode = 3

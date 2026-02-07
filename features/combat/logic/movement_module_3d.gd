@@ -16,8 +16,8 @@ const MOVEMENT_COLOR: Color = Color(0.3, 0.6, 1.0, 0.5)
 # VALIDATION
 # ============================================================================
 
-func can_move_to(unit: BattleUnit3D, target: Vector2i) -> bool:
-	if not unit.can_move():
+func can_move_to(unit: BattleUnit3D, target: Vector2i, bypass_movement_check: bool = false) -> bool:
+	if not bypass_movement_check and not unit.can_move():
 		return false
 	if not terrain.is_in_bounds(target):
 		return false
@@ -26,19 +26,22 @@ func can_move_to(unit: BattleUnit3D, target: Vector2i) -> bool:
 	if unit_manager.is_position_occupied(target):
 		return false
 	
-	var path = calculate_path(unit.grid_position, target, unit.movement_range)
+	# ✅ En mode repos (bypass), portée = 1, sinon portée normale
+	var max_range = 1 if bypass_movement_check else unit.movement_range
+	var path = calculate_path(unit.grid_position, target, max_range)
 	return not path.is_empty()
-
 # ============================================================================
 # MOUVEMENT
 # ============================================================================
 
-func move_unit(unit: BattleUnit3D, target: Vector2i) -> void:
-	if not can_move_to(unit, target):
+func move_unit(unit: BattleUnit3D, target: Vector2i, bypass_movement_check: bool = false) -> void:
+	if not can_move_to(unit, target, bypass_movement_check):
 		push_warning("[MovementModule3D] Mouvement invalide")
 		return
 	
-	var path = calculate_path(unit.grid_position, target, unit.movement_range)
+	# ✅ Utiliser la portée correcte selon le mode
+	var max_range = 1 if bypass_movement_check else unit.movement_range
+	var path = calculate_path(unit.grid_position, target, max_range)
 	if path.is_empty():
 		return
 	
@@ -46,8 +49,7 @@ func move_unit(unit: BattleUnit3D, target: Vector2i) -> void:
 	await _animate_movement_3d(unit, path)
 	unit_manager.move_unit(unit, target)
 	movement_completed.emit(unit, path)
-	
-	print("[MovementModule3D] ", unit.unit_name, " déplacé à ", target)
+	GameRoot.global_logger.debug("MOVEMENT_MODULE", "%s déplacé à %s" % [unit.unit_name,target])
 
 func _animate_movement_3d(unit: BattleUnit3D, path: Array) -> void:
 	"""Anime le déplacement 3D le long d'un chemin"""

@@ -58,7 +58,7 @@ func _create_dialogue_box() -> void:
 	"""Crée la DialogueBox persistante accessible par DialogueManager"""
 	
 	# Charger depuis .tscn si disponible
-	var dialogue_box_scene_path = "res://shared/ui/dialogue_box.tscn"
+	var dialogue_box_scene_path = "res://core/dialogue/dialogue_box.tscn"
 	
 	if ResourceLoader.exists(dialogue_box_scene_path):
 		var packed = load(dialogue_box_scene_path)
@@ -67,6 +67,8 @@ func _create_dialogue_box() -> void:
 	else:
 		# Fallback : créer programmatiquement
 		dialogue_box = DialogueBoxClass.new()
+		dialogue_box.set_anchors_preset(Control.PRESET_FULL_RECT)
+		dialogue_box.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		print("[UIManager]   → DialogueBox créée dynamiquement")
 	
 	dialogue_box.name = "PersistentDialogueBox"

@@ -52,7 +52,7 @@ const SCENE_PATHS: Dictionary = {
 	SceneID.BATTLE_RESULTS: "res://features/Duo/ui/battle_results.tscn",
 	
 	# Narration
-	SceneID.CUTSCENE: "res://features/narrative/cutscene.tscn",
+	SceneID.CUTSCENE: "res://features/cutscene/cutscene.tscn",
 	SceneID.DIALOGUE: "res://features/narrative/dialogue.tscn",
 	
 	# Système
