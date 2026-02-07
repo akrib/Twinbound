@@ -74,67 +74,52 @@ const ATTACK_COLOR: Color = Color(1.0, 0.3, 0.3, 0.5)
 # Scènes préchargées
 const DUO_ATTACK_OPTION_SCENE = preload("res://features/Duo/ui/duo_attack_option.tscn")
 const CHARACTER_MINI_CARD_SCENE = preload("res://features/Duo/ui/character_mini_card.tscn")
-
-# ============================================================================
-# RÉFÉRENCES UI
-# ============================================================================
-
 @onready var grid_container: Node3D = $GridContainer
 @onready var units_container: Node3D = $UnitsContainer
 @onready var camera_rig: Node3D = $CameraRig
 @onready var camera: Camera3D = $CameraRig/Camera3D
-@onready var ui_layer: CanvasLayer = $UILayer
-@onready var battle_ui: Control = $UILayer/BattleUI
 
-# Menu d'actions
-@onready var action_popup: PopupPanel = $UILayer/BattleUI/ActionPopup
-@onready var move_button: Button = $UILayer/BattleUI/ActionPopup/VBoxContainer/MoveButton
-@onready var attack_button: Button = $UILayer/BattleUI/ActionPopup/VBoxContainer/AttackButton
-@onready var defend_button: Button = $UILayer/BattleUI/ActionPopup/VBoxContainer/DefendButton
-@onready var draw_mana_button: Button = $UILayer/BattleUI/ActionPopup/VBoxContainer/DrawManaButton
-#@onready var abilities_button: Button = $UILayer/BattleUI/ActionPopup/VBoxContainer/AbilitiesButton
-@onready var items_button: Button = $UILayer/BattleUI/ActionPopup/VBoxContainer/ItemsButton
-@onready var prepare_button: Button = $UILayer/BattleUI/ActionPopup/VBoxContainer/PrepareButton
-#@onready var wait_action_button: Button = $UILayer/BattleUI/ActionPopup/VBoxContainer/WaitActionButton
-@onready var cancel_button: Button = $UILayer/BattleUI/ActionPopup/VBoxContainer/CancelButton
+# UI créée dynamiquement via UIManager
+var ui_container: Control
+var top_bar: Control
+var bottom_bar: Control
+var action_menu: PopupPanel
+var duo_menu: PopupPanel
+var item_menu: PopupPanel
+var info_panel: Control
 
-# Menu de duo
-@onready var duo_popup: PopupPanel = $UILayer/BattleUI/DuoSelectionPopup
-@onready var support_card_container: PanelContainer = $UILayer/BattleUI/DuoSelectionPopup/MarginContainer/HBoxContainer/SupportMiniCard
-@onready var leader_card_container: PanelContainer = $UILayer/BattleUI/DuoSelectionPopup/MarginContainer/HBoxContainer/LeaderMiniCard
-@onready var duo_options_container: VBoxContainer = $UILayer/BattleUI/DuoSelectionPopup/MarginContainer/HBoxContainer/CenterContainer/DuoOptionsContainer
-@onready var solo_button_duo: Button = $UILayer/BattleUI/DuoSelectionPopup/MarginContainer/HBoxContainer/CenterContainer/ButtonsContainer/SoloButton
-@onready var cancel_duo_button: Button = $UILayer/BattleUI/DuoSelectionPopup/MarginContainer/HBoxContainer/CenterContainer/ButtonsContainer/CancelDuoButton
+# Références aux éléments UI
+var turn_label: Label
+var phase_label: Label
+var end_turn_button: Button
+var info_unit_name_label: Label
+var info_class_label: Label
+var info_hp_value: Label
+var info_atk_value: Label
+var info_def_value: Label
+var info_mov_value: Label
 
-# Labels d'info
-@onready var info_unit_name_label: Label = $UILayer/BattleUI/UnitInfoPanel/MarginContainer/VBoxContainer/UnitNameLabel
-@onready var info_class_label: Label = $UILayer/BattleUI/UnitInfoPanel/MarginContainer/VBoxContainer/ClassLabel
-@onready var info_hp_value: Label = $UILayer/BattleUI/UnitInfoPanel/MarginContainer/VBoxContainer/StatsGrid/HPValue
-@onready var info_atk_value: Label = $UILayer/BattleUI/UnitInfoPanel/MarginContainer/VBoxContainer/StatsGrid/ATKValue
-@onready var info_def_value: Label = $UILayer/BattleUI/UnitInfoPanel/MarginContainer/VBoxContainer/StatsGrid/DEFValue
-@onready var info_mov_value: Label = $UILayer/BattleUI/UnitInfoPanel/MarginContainer/VBoxContainer/StatsGrid/MOVValue
-@onready var turn_label: Label = $UILayer/BattleUI/TopBar/MarginContainer/HBoxContainer/TurnLabel
-@onready var phase_label: Label = $UILayer/BattleUI/TopBar/MarginContainer/HBoxContainer/PhaseLabel
+# Boutons du menu d'actions
+var move_button: Button
+var attack_button: Button
+var defend_button: Button
+var draw_mana_button: Button
+var items_button: Button
+var prepare_button: Button
+var cancel_button: Button
 
-# Boutons de contrôle
-@onready var end_turn_button: Button = $UILayer/BattleUI/BottomBar/MarginContainer/HBoxContainer/ButtonsContainer/EndTurnButton
+# Boutons du menu de duo
+var solo_button_duo: Button
+var cancel_duo_button: Button
+var duo_options_container: VBoxContainer
+var support_card_container: Control
+var leader_card_container: Control
+
+# Liste d'objets
+var item_list_container: VBoxContainer
 
 # Rosace de caméra
-@onready var compass_n: Button = $UILayer/BattleUI/BottomBar/MarginContainer/HBoxContainer/CameraCompass/NButton
-@onready var compass_ne: Button = $UILayer/BattleUI/BottomBar/MarginContainer/HBoxContainer/CameraCompass/NEButton
-@onready var compass_e: Button = $UILayer/BattleUI/BottomBar/MarginContainer/HBoxContainer/CameraCompass/EButton
-@onready var compass_se: Button = $UILayer/BattleUI/BottomBar/MarginContainer/HBoxContainer/CameraCompass/SEButton
-@onready var compass_s: Button = $UILayer/BattleUI/BottomBar/MarginContainer/HBoxContainer/CameraCompass/SButton
-@onready var compass_sw: Button = $UILayer/BattleUI/BottomBar/MarginContainer/HBoxContainer/CameraCompass/SWButton
-@onready var compass_w: Button = $UILayer/BattleUI/BottomBar/MarginContainer/HBoxContainer/CameraCompass/WButton
-@onready var compass_nw: Button = $UILayer/BattleUI/BottomBar/MarginContainer/HBoxContainer/CameraCompass/NWButton
-@onready var compass_center: Button = $UILayer/BattleUI/BottomBar/MarginContainer/HBoxContainer/CameraCompass/CenterButton
-
-# Dialogue
-# Dialogue et objets
-#@onready var dialogue_box: DialogueBox = $UILayer/DialogueBox
-@onready var item_popup: PopupPanel = $UILayer/BattleUI/ItemPopup
-@onready var item_list_container: VBoxContainer = $UILayer/BattleUI/ItemPopup/MarginContainer/VBoxContainer/ScrollContainer/ItemListContainer
+var compass_buttons: Dictionary = {}
 # ============================================================================
 # MODULES
 # ============================================================================
@@ -300,21 +285,6 @@ func _handle_camera_zoom(direction: float) -> void:
 # ROSACE DE CAMÉRA
 # ============================================================================
 
-func _connect_compass_buttons() -> void:
-	"""Connecte les boutons de la rosace de caméra"""
-	
-	compass_n.pressed.connect(func(): set_camera_direction(CompassDirection.NORTH))
-	compass_ne.pressed.connect(func(): set_camera_direction(CompassDirection.NORTH_EAST))
-	compass_e.pressed.connect(func(): set_camera_direction(CompassDirection.EAST))
-	compass_se.pressed.connect(func(): set_camera_direction(CompassDirection.SOUTH_EAST))
-	compass_s.pressed.connect(func(): set_camera_direction(CompassDirection.SOUTH))
-	compass_sw.pressed.connect(func(): set_camera_direction(CompassDirection.SOUTH_WEST))
-	compass_w.pressed.connect(func(): set_camera_direction(CompassDirection.WEST))
-	compass_nw.pressed.connect(func(): set_camera_direction(CompassDirection.NORTH_WEST))
-	compass_center.pressed.connect(_on_center_camera)
-	
-	GameRoot.global_logger.debug("BATTLE", "Boutons de la rosace connectés")
-
 func set_camera_direction(direction: CompassDirection) -> void:
 	"""Positionne la caméra selon une direction cardinale"""
 	
@@ -343,8 +313,7 @@ func _ready() -> void:
 	add_child(battle_state_machine)
 	
 	_setup_camera()
-	_connect_ui_buttons()
-	_connect_compass_buttons()
+	_create_battle_ui()  # ✅ NOUVEAU
 	_create_transition_overlay()
 	
 	GameRoot.global_logger.info("BATTLE", "BattleMapManager3D initialisé")
@@ -360,11 +329,9 @@ func _ready() -> void:
 	
 	battle_state_machine.state_changed.connect(_on_battle_state_changed)
 	
-	support_mini_card = CHARACTER_MINI_CARD_SCENE.instantiate()
-	support_card_container.add_child(support_mini_card)
-	
-	leader_mini_card = CHARACTER_MINI_CARD_SCENE.instantiate()
-	leader_card_container.add_child(leader_mini_card)
+	# Instances des mini-cartes (créées à la demande)
+	support_mini_card = null
+	leader_mini_card = null
 	
 	if GameRoot.debug_overlay:
 		GameRoot.debug_overlay.watch_variable("Tour actuel", self, "current_turn")
@@ -372,30 +339,304 @@ func _ready() -> void:
 		GameRoot.debug_overlay.watch_variable("Unités joueur", unit_manager, "player_units")
 		GameRoot.debug_overlay.watch_variable("Unités ennemies", unit_manager, "enemy_units")
 
+# ============================================================================
+# CRÉATION DE L'UI
+# ============================================================================
+
+func _create_battle_ui() -> void:
+	"""Crée toute l'interface de combat via UIManager"""
+	
+	var ui = GameRoot.ui_manager
+	
+	# Conteneur principal
+	ui_container = Control.new()
+	ui_container.set_anchors_preset(Control.PRESET_FULL_RECT)
+	ui_container.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(ui_container)
+	
+	# Top bar
+	top_bar = ui.create_top_bar("")
+	top_bar.panel_style = GameRoot.ThemedPanel.PanelStyle.DARK
+	ui_container.add_child(top_bar)
+	
+	var top_hbox = top_bar.get_first_content_child()
+	
+	turn_label = ui.create_label("Tour 1", GameRoot.ThemedLabel.LabelStyle.TITLE)
+	turn_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	top_hbox.add_child(turn_label)
+	
+	phase_label = ui.create_label("Phase: Joueur", GameRoot.ThemedLabel.LabelStyle.SUBTITLE)
+	top_hbox.add_child(phase_label)
+	
+	var camera_hint = ui.create_label("A/E: Rotation", GameRoot.ThemedLabel.LabelStyle.SMALL)
+	top_hbox.add_child(camera_hint)
+	
+	# Bottom bar
+	bottom_bar = ui.create_bottom_bar()
+	bottom_bar.panel_style = GameRoot.ThemedPanel.PanelStyle.DARK
+	ui_container.add_child(bottom_bar)
+	
+	var bottom_hbox = bottom_bar.get_first_content_child()
+	
+	var buttons_container = HBoxContainer.new()
+	buttons_container.add_theme_constant_override("separation", 10)
+	buttons_container.size_flags_horizontal = Control.SIZE_SHRINK_END
+	bottom_hbox.add_child(buttons_container)
+	
+	end_turn_button = ui.create_button("Fin du Tour", _on_end_turn_pressed, "", 150, 60)
+	buttons_container.add_child(end_turn_button)
+	
+	_create_camera_compass(bottom_hbox)
+	
+	# Panel d'info
+	info_panel = _create_unit_info_panel(ui)
+	ui_container.add_child(info_panel)
+	
+	# Enregistrer
+	ui.register_scene_ui("battle_map", ui_container)
+	ui.show_scene_ui("battle_map")
+	
+	GameRoot.global_logger.info("BATTLE", "UI de combat créée")
+
+func _create_unit_info_panel(ui) -> Control:
+	"""Crée le panel d'info d'unité"""
+	
+	var panel = GameRoot.ThemedPanel.new()
+	panel.panel_style = GameRoot.ThemedPanel.PanelStyle.DARK
+	panel.set_anchors_preset(Control.PRESET_BOTTOM_RIGHT)
+	panel.anchor_left = 1.0
+	panel.anchor_top = 1.0
+	panel.offset_left = -320
+	panel.offset_top = -300
+	panel.offset_right = -20
+	panel.offset_bottom = -140
+	
+	var vbox = VBoxContainer.new()
+	vbox.add_theme_constant_override("separation", 8)
+	panel.add_content(vbox)
+	
+	info_unit_name_label = ui.create_label("[Aucune sélection]", GameRoot.ThemedLabel.LabelStyle.TITLE)
+	info_unit_name_label.add_theme_color_override("font_color", Color(1, 0.9, 0.6))
+	vbox.add_child(info_unit_name_label)
+	
+	info_class_label = ui.create_label("Classe: --", GameRoot.ThemedLabel.LabelStyle.SMALL)
+	vbox.add_child(info_class_label)
+	
+	vbox.add_child(HSeparator.new())
+	
+	var stats_grid = GridContainer.new()
+	stats_grid.columns = 2
+	vbox.add_child(stats_grid)
+	
+	stats_grid.add_child(ui.create_label("HP:", GameRoot.ThemedLabel.LabelStyle.NORMAL))
+	info_hp_value = ui.create_label("--/--", GameRoot.ThemedLabel.LabelStyle.NORMAL)
+	info_hp_value.add_theme_color_override("font_color", Color(0.5, 1, 0.5))
+	stats_grid.add_child(info_hp_value)
+	
+	stats_grid.add_child(ui.create_label("ATK:", GameRoot.ThemedLabel.LabelStyle.NORMAL))
+	info_atk_value = ui.create_label("--", GameRoot.ThemedLabel.LabelStyle.NORMAL)
+	stats_grid.add_child(info_atk_value)
+	
+	stats_grid.add_child(ui.create_label("DEF:", GameRoot.ThemedLabel.LabelStyle.NORMAL))
+	info_def_value = ui.create_label("--", GameRoot.ThemedLabel.LabelStyle.NORMAL)
+	stats_grid.add_child(info_def_value)
+	
+	stats_grid.add_child(ui.create_label("MOV:", GameRoot.ThemedLabel.LabelStyle.NORMAL))
+	info_mov_value = ui.create_label("--", GameRoot.ThemedLabel.LabelStyle.NORMAL)
+	stats_grid.add_child(info_mov_value)
+	
+	return panel
+
+func _create_camera_compass(parent: HBoxContainer) -> void:
+	"""Crée la rosace de contrôle de caméra"""
+	
+	var ui = GameRoot.ui_manager
+	
+	var compass_container = Control.new()
+	compass_container.custom_minimum_size = Vector2(120, 120)
+	compass_container.size_flags_horizontal = Control.SIZE_SHRINK_END
+	parent.add_child(compass_container)
+	
+	var bg_panel = GameRoot.ThemedPanel.new()
+	bg_panel.panel_style = GameRoot.ThemedPanel.PanelStyle.DARK
+	bg_panel.set_anchors_preset(Control.PRESET_FULL_RECT)
+	compass_container.add_child(bg_panel)
+	
+	var center_btn = ui.create_button("📷", _on_center_camera, "", 30, 30)
+	center_btn.set_anchors_preset(Control.PRESET_CENTER)
+	center_btn.offset_left = -15
+	center_btn.offset_top = -15
+	center_btn.offset_right = 15
+	center_btn.offset_bottom = 15
+	compass_container.add_child(center_btn)
+	
+	var create_dir = func(text: String, offset_x: float, offset_y: float, dir: int):
+		var btn = ui.create_button(text, func(): set_camera_direction(dir), "", 25, 25)
+		btn.set_anchors_preset(Control.PRESET_CENTER)
+		btn.offset_left = offset_x - 12.5
+		btn.offset_top = offset_y - 12.5
+		btn.offset_right = offset_x + 12.5
+		btn.offset_bottom = offset_y + 12.5
+		compass_container.add_child(btn)
+		compass_buttons[text] = btn
+	
+	create_dir.call("N", 0, -55, CompassDirection.NORTH)
+	create_dir.call("NE", 35, -40, CompassDirection.NORTH_EAST)
+	create_dir.call("E", 50, 0, CompassDirection.EAST)
+	create_dir.call("SE", 35, 40, CompassDirection.SOUTH_EAST)
+	create_dir.call("S", 0, 55, CompassDirection.SOUTH)
+	create_dir.call("SW", -35, 40, CompassDirection.SOUTH_WEST)
+	create_dir.call("W", -50, 0, CompassDirection.WEST)
+	create_dir.call("NW", -35, -40, CompassDirection.NORTH_WEST)
+
+func _create_action_menu() -> void:
+	"""Crée le menu d'actions dynamiquement"""
+	
+	if action_menu and is_instance_valid(action_menu):
+		action_menu.queue_free()
+	
+	var ui = GameRoot.ui_manager
+	action_menu = ui.create_action_menu()
+	
+	var vbox = action_menu.get_node("MarginContainer/VBoxContainer")
+	
+	move_button = ui.create_button("👣 Déplacer", _on_move_pressed, "", 180, 40)
+	vbox.add_child(move_button)
+	
+	attack_button = ui.create_button("⚔ Attaquer", _on_attack_pressed, "", 180, 40)
+	vbox.add_child(attack_button)
+	
+	defend_button = ui.create_button("🛡 Défendre", _on_defend_pressed, "", 180, 40)
+	vbox.add_child(defend_button)
+	
+	draw_mana_button = ui.create_button("💧 Puiser du Mana", _on_draw_mana_pressed, "", 180, 40)
+	vbox.add_child(draw_mana_button)
+	
+	items_button = ui.create_button("🎒 Objets", _on_items_pressed, "", 180, 40)
+	vbox.add_child(items_button)
+	
+	prepare_button = ui.create_button("🛡️ Se Préparer", _on_prepare_pressed, "", 180, 40)
+	vbox.add_child(prepare_button)
+	
+	cancel_button = ui.create_button("✕ Annuler", _on_cancel_action_pressed, "", 180, 40)
+	vbox.add_child(cancel_button)
+	
+	ui_container.add_child(action_menu)
+
+func _create_duo_menu() -> void:
+	"""Crée le menu de sélection de duo"""
+	
+	if duo_menu and is_instance_valid(duo_menu):
+		duo_menu.queue_free()
+	
+	var ui = GameRoot.ui_manager
+	
+	duo_menu = PopupPanel.new()
+	duo_menu.name = "DuoSelectionPopup"
+	duo_menu.visible = false
+	ui_container.add_child(duo_menu)
+	
+	var style = GameRoot.UITheme.create_panel_style()
+	style.bg_color = Color(0.1, 0.1, 0.12, 0.85)
+	duo_menu.add_theme_stylebox_override("panel", style)
+	
+	var margin = MarginContainer.new()
+	margin.add_theme_constant_override("margin_left", 20)
+	margin.add_theme_constant_override("margin_top", 20)
+	margin.add_theme_constant_override("margin_right", 20)
+	margin.add_theme_constant_override("margin_bottom", 20)
+	duo_menu.add_child(margin)
+	
+	var hbox = HBoxContainer.new()
+	hbox.add_theme_constant_override("separation", 20)
+	margin.add_child(hbox)
+	
+	support_card_container = GameRoot.ThemedPanel.new()
+	support_card_container.custom_minimum_size = Vector2(180, 0)
+	support_card_container.panel_style = GameRoot.ThemedPanel.PanelStyle.DEFAULT
+	hbox.add_child(support_card_container)
+	
+	var center_vbox = VBoxContainer.new()
+	center_vbox.add_theme_constant_override("separation", 15)
+	center_vbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	hbox.add_child(center_vbox)
+	
+	var title = ui.create_label("⚔️ Formation de Duo ⚔️", GameRoot.ThemedLabel.LabelStyle.TITLE)
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	center_vbox.add_child(title)
+	
+	var subtitle = ui.create_label("Choisissez votre combinaison", GameRoot.ThemedLabel.LabelStyle.SMALL)
+	subtitle.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	center_vbox.add_child(subtitle)
+	
+	center_vbox.add_child(HSeparator.new())
+	
+	duo_options_container = VBoxContainer.new()
+	duo_options_container.add_theme_constant_override("separation", 10)
+	duo_options_container.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	center_vbox.add_child(duo_options_container)
+	
+	center_vbox.add_child(HSeparator.new())
+	
+	var buttons_hbox = HBoxContainer.new()
+	buttons_hbox.add_theme_constant_override("separation", 10)
+	buttons_hbox.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	center_vbox.add_child(buttons_hbox)
+	
+	solo_button_duo = ui.create_button("🚶 Attaquer Seul", _on_solo_attack_pressed, "", 200, 50)
+	buttons_hbox.add_child(solo_button_duo)
+	
+	cancel_duo_button = ui.create_button("✕ Annuler", _on_cancel_duo_pressed, "", 200, 50)
+	buttons_hbox.add_child(cancel_duo_button)
+	
+	leader_card_container = GameRoot.ThemedPanel.new()
+	leader_card_container.custom_minimum_size = Vector2(180, 0)
+	leader_card_container.panel_style = GameRoot.ThemedPanel.PanelStyle.DEFAULT
+	hbox.add_child(leader_card_container)
+
+func _create_item_menu() -> void:
+	"""Crée le menu d'objets"""
+	
+	if item_menu and is_instance_valid(item_menu):
+		item_menu.queue_free()
+	
+	var ui = GameRoot.ui_manager
+	item_menu = PopupPanel.new()
+	item_menu.name = "ItemPopup"
+	item_menu.visible = false
+	ui_container.add_child(item_menu)
+	
+	var margin = MarginContainer.new()
+	margin.add_theme_constant_override("margin_left", 20)
+	margin.add_theme_constant_override("margin_top", 20)
+	margin.add_theme_constant_override("margin_right", 20)
+	margin.add_theme_constant_override("margin_bottom", 20)
+	item_menu.add_child(margin)
+	
+	var vbox = VBoxContainer.new()
+	vbox.add_theme_constant_override("separation", 10)
+	margin.add_child(vbox)
+	
+	var title = ui.create_label("📦 Objets", GameRoot.ThemedLabel.LabelStyle.TITLE)
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	vbox.add_child(title)
+	
+	var scroll = ScrollContainer.new()
+	scroll.custom_minimum_size = Vector2(0, 400)
+	vbox.add_child(scroll)
+	
+	item_list_container = VBoxContainer.new()
+	item_list_container.add_theme_constant_override("separation", 10)
+	item_list_container.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	scroll.add_child(item_list_container)
+
+
 func _setup_camera() -> void:
 	camera_rig.position = Vector3.ZERO
 	camera_rotation_current = 0.0
 	camera_rotation_target = 0.0
 	_update_camera_position()
 
-func _connect_ui_buttons() -> void:
-	"""Connecte tous les boutons de l'interface"""
-	
-	# Menu d'actions
-	move_button.pressed.connect(_on_move_pressed)
-	attack_button.pressed.connect(_on_attack_pressed)
-	defend_button.pressed.connect(_on_defend_pressed)
-	draw_mana_button.pressed.connect(_on_draw_mana_pressed)
-	items_button.pressed.connect(_on_items_pressed)
-	prepare_button.pressed.connect(_on_prepare_pressed)
-	cancel_button.pressed.connect(_on_cancel_action_pressed)
-	
-	# Menu de duo
-	solo_button_duo.pressed.connect(_on_solo_attack_pressed)
-	cancel_duo_button.pressed.connect(_on_cancel_duo_pressed)
-	
-	# Boutons de contrôle
-	end_turn_button.pressed.connect(_on_end_turn_pressed)
 
 func initialize_battle(data: Dictionary) -> void:
 	if is_battle_active:
@@ -721,7 +962,9 @@ func _input(event: InputEvent) -> void:
 	
 	# Clic souris
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
-		if not action_popup.visible and not duo_popup.visible:
+		# Vérifier si un menu est visible (en vérifiant d'abord s'il existe)
+		var menu_visible = (action_menu and action_menu.visible) or (duo_menu and duo_menu.visible) or (item_menu and item_menu.visible)
+		if not menu_visible:
 			_handle_mouse_click(event.position)
 
 # ============================================================================
@@ -967,23 +1210,24 @@ func _open_action_menu() -> void:
 	if not selected_unit:
 		return
 	
-	var screen_pos = camera.unproject_position(selected_unit.position)
-	action_popup.position = screen_pos + Vector2(50, -100)
+	# Créer le menu si nécessaire
+	if not action_menu or not is_instance_valid(action_menu):
+		_create_action_menu()
 	
-	# ✅ Logique du bouton Déplacer avec repos
+	var screen_pos = camera.unproject_position(selected_unit.position)
+	action_menu.position = screen_pos + Vector2(50, -100)
+	
+	# Mise à jour des boutons
 	var can_use_rest = rest_module.can_use_rest(selected_unit)
 	var has_moved = selected_unit.movement_used
 	
 	if has_moved and can_use_rest:
-		# L'unité s'est déjà déplacée, proposer le repos
 		move_button.text = "🏃 Repos (%d/2)" % rest_module.get_rest_points(selected_unit.is_player_unit)
 		move_button.disabled = false
 	elif not has_moved:
-		# Déplacement normal
 		move_button.text = "👣 Déplacer"
 		move_button.disabled = not selected_unit.can_move()
 	else:
-		# Déjà bougé et pas de repos
 		move_button.text = "👣 Déplacer"
 		move_button.disabled = true
 	
@@ -991,13 +1235,16 @@ func _open_action_menu() -> void:
 	defend_button.disabled = not selected_unit.can_act()
 	draw_mana_button.disabled = not selected_unit.can_act()
 	
-	action_popup.popup()
-
+	action_menu.popup()
+	
 func _close_all_menus() -> void:
-	action_popup.hide()
-	duo_popup.hide()
+	if action_menu and is_instance_valid(action_menu):
+		action_menu.hide()
+	if duo_menu and is_instance_valid(duo_menu):
+		duo_menu.hide()
+	if item_menu and is_instance_valid(item_menu):
+		item_menu.hide()
 	terrain_module.clear_all_highlights()
-
 # ============================================================================
 # ACTIONS DU MENU
 # ============================================================================
@@ -1015,7 +1262,7 @@ func _on_move_pressed() -> void:
 		
 		GameRoot.event_bus.notify("✨ Repos utilisé : +1 case de déplacement", "success")
 		
-		action_popup.hide()
+		action_menu.hide()
 		current_action_state = ActionState.USING_REST
 		
 		# Calculer positions accessibles (1 case uniquement)
@@ -1038,7 +1285,7 @@ func _on_move_pressed() -> void:
 		if not selected_unit.can_move():
 			return
 		
-		action_popup.hide()
+		action_menu.hide()
 		current_action_state = ActionState.SHOWING_MOVE
 		
 		var reachable = movement_module.calculate_reachable_positions(selected_unit)
@@ -1050,7 +1297,7 @@ func _on_attack_pressed() -> void:
 	if not selected_unit or not selected_unit.can_act():
 		return
 	
-	action_popup.hide()
+	action_menu.hide()
 	_open_duo_selection_menu()
 
 func _on_defend_pressed() -> void:
@@ -1186,6 +1433,9 @@ func _open_duo_selection_menu() -> void:
 	if not selected_unit:
 		return
 	
+	# Créer le menu si nécessaire
+	if not duo_menu or not is_instance_valid(duo_menu):
+		_create_duo_menu()
 	var allies = unit_manager.get_alive_player_units()
 	var is_last_survivor = allies.size() == 1
 	
@@ -1268,44 +1518,13 @@ func _open_duo_selection_menu() -> void:
 		solo_button_duo.text = "⚔️ Attaquer (Dernier survivant)"
 	
 	var screen_size = get_viewport().get_visible_rect().size
-	duo_popup.position = Vector2(screen_size.x - 1020, 20)
+	duo_menu.position = Vector2(screen_size.x - 1020, 20)
 	
-	_setup_duo_popup_transparency()
-	duo_popup.popup()
+	#_setup_duo_popup_transparency()
+	duo_menu.popup()
 	
 	current_action_state = ActionState.CHOOSING_DUO
 
-func _setup_duo_popup_transparency() -> void:
-	if not duo_popup.has_theme_stylebox_override("panel"):
-		var style = StyleBoxFlat.new()
-		style.bg_color = Color(0.1, 0.1, 0.12, 0.85)
-		style.border_color = Color(0.7, 0.7, 0.8, 0.9)
-		style.border_width_left = 3
-		style.border_width_top = 3
-		style.border_width_right = 3
-		style.border_width_bottom = 3
-		style.corner_radius_top_left = 12
-		style.corner_radius_top_right = 12
-		style.corner_radius_bottom_left = 12
-		style.corner_radius_bottom_right = 12
-		
-		duo_popup.add_theme_stylebox_override("panel", style)
-	
-	if support_card_container and not support_card_container.has_theme_stylebox_override("panel"):
-		var card_style = StyleBoxFlat.new()
-		card_style.bg_color = Color(0.15, 0.15, 0.18, 0.90)
-		card_style.border_width_left = 2
-		card_style.border_width_top = 2
-		card_style.border_width_right = 2
-		card_style.border_width_bottom = 2
-		card_style.border_color = Color(0.6, 0.6, 0.7, 1)
-		card_style.corner_radius_top_left = 10
-		card_style.corner_radius_top_right = 10
-		card_style.corner_radius_bottom_right = 10
-		card_style.corner_radius_bottom_left = 10
-		
-		support_card_container.add_theme_stylebox_override("panel", card_style)
-		leader_card_container.add_theme_stylebox_override("panel", card_style)
 
 func _on_duo_option_selected(partner: BattleUnit3D, ring_combo: Dictionary) -> void:
 	if not _is_cardinal_adjacent(selected_unit.grid_position, partner.grid_position):
@@ -1315,7 +1534,7 @@ func _on_duo_option_selected(partner: BattleUnit3D, ring_combo: Dictionary) -> v
 	duo_partner = partner
 	current_attack_profile = ring_combo
 	
-	duo_popup.hide()
+	duo_menu.hide()
 	_show_attack_range()
 	
 	GameRoot.event_bus.notify("Duo : %s + %s" % [selected_unit.unit_name, partner.unit_name], "info")
@@ -1359,7 +1578,7 @@ func _select_duo_partner(partner: BattleUnit3D) -> void:
 	
 	if duo_system.try_form_duo(selected_unit, partner):
 		duo_partner = partner
-		duo_popup.hide()
+		duo_menu.hide()
 		_show_attack_range()
 		
 		GameRoot.global_logger.info("BATTLE", "Duo formé via DuoSystem")
@@ -1372,7 +1591,7 @@ func _on_solo_attack_pressed() -> void:
 	if not selected_unit:
 		return
 	
-	duo_popup.hide()
+	duo_menu.hide()
 	duo_partner = null
 	
 	# ✅ Vérifier si Last Man Stand est possible
@@ -1399,7 +1618,7 @@ func _on_solo_attack_pressed() -> void:
 
 
 func _on_cancel_duo_pressed() -> void:
-	duo_popup.hide()
+	duo_menu.hide()
 	current_action_state = ActionState.UNIT_SELECTED
 	_open_action_menu()
 
@@ -1695,9 +1914,7 @@ func _on_battle_state_changed(from: String, to: String) -> void:
 	GameRoot.global_logger.debug("BATTLE", "État : %s → %s" % [from, to])
 	phase_label.text = "Phase: " + to
 
-func _exit_tree() -> void:
-	GameRoot.event_bus.disconnect_all(self)
-	GameRoot.global_logger.info("BATTLE", "BattleMapManager3D nettoyé")
+
 
 func store_battle_results(results: Dictionary) -> void:
 	"""Stocke les résultats du combat pour l'écran de résultats"""
@@ -1716,15 +1933,17 @@ func _on_items_pressed() -> void:
 	if not selected_unit:
 		return
 	
-	action_popup.hide()
+	action_menu.hide()
 	_open_item_menu()
 
 func _open_item_menu() -> void:
 	"""Affiche le menu de sélection d'objets"""
-	
 	if not selected_unit:
 		return
 	
+	# Créer le menu si nécessaire
+	if not item_menu or not is_instance_valid(item_menu):
+		_create_item_menu()
 	# Nettoyer la liste
 	for child in item_list_container.get_children():
 		child.queue_free()
@@ -1751,8 +1970,8 @@ func _open_item_menu() -> void:
 	
 	# Positionner et afficher
 	var screen_size = get_viewport().get_visible_rect().size
-	item_popup.position = Vector2(screen_size.x / 2 - 200, screen_size.y / 2 - 250)
-	item_popup.popup()
+	item_menu.position = Vector2(screen_size.x / 2 - 200, screen_size.y / 2 - 250)
+	item_menu.popup()
 
 func _create_item_button(item_info: Dictionary) -> Button:
 	"""Crée un bouton pour un objet"""
@@ -1790,7 +2009,7 @@ func _create_item_button(item_info: Dictionary) -> Button:
 func _on_item_selected(item_id: String, item_info: Dictionary) -> void:
 	"""Quand un objet est sélectionné"""
 	
-	item_popup.hide()
+	item_menu.hide()
 	
 	var target_type = item_info.get("target_type", "self")
 	
@@ -1831,7 +2050,7 @@ func _on_item_selected(item_id: String, item_info: Dictionary) -> void:
 
 func _on_item_menu_cancel() -> void:
 	"""Annule la sélection d'objet"""
-	item_popup.hide()
+	item_menu.hide()
 	_open_action_menu()
 	
 func _on_item_used(unit: BattleUnit3D, item_id: String, target: Variant) -> void:
@@ -1855,3 +2074,11 @@ func _get_positions_in_range(center: Vector2i, range: int) -> Array[Vector2i]:
 					positions.append(pos)
 	
 	return positions
+
+
+
+func _exit_tree() -> void:
+	if ui_container:
+		GameRoot.ui_manager.remove_scene_ui("battle_map")
+	GameRoot.event_bus.disconnect_all(self)
+	GameRoot.global_logger.info("BATTLE", "BattleMapManager3D nettoyé")

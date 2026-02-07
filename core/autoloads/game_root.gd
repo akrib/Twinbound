@@ -34,6 +34,11 @@ const DialogueDataLoader   = preload("res://core/dialogue/dialogue_data_loader.g
 const DialogueBoxClass     = preload("res://core/dialogue/dialogue_box.gd")
 const BarkSystem           = preload("res://core/dialogue/bark_system.gd")
 
+# === UI SYSTEM ===
+const UITheme      = preload("res://core/ui/ui_theme.gd")
+const ThemedPanel  = preload("res://core/ui/base_panel.gd")
+const ThemedButton = preload("res://core/ui/base_button.gd")
+const ThemedLabel  = preload("res://core/ui/base_label.gd")
 # === FEATURES ===
 const DebugVersionPanel    = preload("res://features/debug/debug_version_panel.gd")
 #const MainMenuClass        = preload("res://features/menu/main_menu.gd")
