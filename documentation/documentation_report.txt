@@ -23,6 +23,10 @@ Documentation status report
 📄 core/dialogue/dialogue_data.gd → NOT DOCUMENTED
 📄 core/dialogue/dialogue_data_loader.gd → NOT DOCUMENTED
 📄 core/game_root.tscn → NOT DOCUMENTED
+📄 core/ui/base_button.gd → NOT DOCUMENTED
+📄 core/ui/base_label.gd → NOT DOCUMENTED
+📄 core/ui/base_panel.gd → NOT DOCUMENTED
+📄 core/ui/ui_theme.gd → NOT DOCUMENTED
 📄 features/Duo/duo_system.gd → NOT DOCUMENTED
 📄 features/Duo/ring_system.gd → NOT DOCUMENTED
 📄 features/Duo/ui/battle_results.gd → NOT DOCUMENTED
@@ -47,6 +51,8 @@ Documentation status report
 📄 features/combat/visuals/damage_number.gd → NOT DOCUMENTED
 📄 features/combat/visuals/damage_number.tscn → NOT DOCUMENTED
 📄 features/combat/visuals/terrain_module_3d.gd → NOT DOCUMENTED
+📄 features/cutscene/cutscene.gd → NOT DOCUMENTED
+📄 features/cutscene/cutscene.tscn → NOT DOCUMENTED
 📄 features/debug/debug_version_panel.gd → NOT DOCUMENTED
 📄 features/menu/main_menu.gd → NOT DOCUMENTED
 📄 features/menu/main_menu.tscn → NOT DOCUMENTED
@@ -67,6 +73,7 @@ Documentation status report
 📄 shared/item_data_loader.gd → NOT DOCUMENTED
 📄 shared/json_scenario_module.gd → NOT DOCUMENTED
 📄 shared/state_machine.gd → NOT DOCUMENTED
+📄 shared/system/boot.tscn → NOT DOCUMENTED
 📄 shared/visuals/effects/text/rainbow_effect.gd → NOT DOCUMENTED
 📄 shared/visuals/effects/text/shake_effect.gd → NOT DOCUMENTED
 📄 shared/visuals/effects/text/wave_effect.gd → NOT DOCUMENTED

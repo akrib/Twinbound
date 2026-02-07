@@ -1,7 +1,7 @@
 {
-  "build_date": "2026-02-07 16:53:23",
-  "git_commit": "37c4584",
+  "build_date": "2026-02-07 16:55:07",
+  "git_commit": "0aa1752",
   "git_branch": "main",
-  "git_dirty": false,
+  "git_dirty": true,
   "game_version": "0.0.0"
 }
