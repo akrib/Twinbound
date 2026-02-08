@@ -5,17 +5,13 @@ extends Node
 
 const ABILITIES_DIR = "res://data/abilities/"
 
-var _json_loader: JSONDataLoader
 var abilities: Dictionary = {}
-
-func _init():
-	_json_loader = JSONDataLoader.new()
 
 func _ready() -> void:
 	load_all_abilities()
 
 func load_all_abilities() -> void:
-	abilities = _json_loader.load_json_directory(ABILITIES_DIR, false)
+	abilities = GameRoot.json_data_loader.load_json_directory(ABILITIES_DIR, false)
 	
 	if abilities.is_empty():
 		push_warning("No abilities loaded from " + ABILITIES_DIR)
@@ -35,8 +31,8 @@ func get_ability(ability_id: String) -> Dictionary:
 
 func reload_ability(ability_id: String) -> void:
 	var file_path = ABILITIES_DIR.path_join(ability_id + ".json")
-	_json_loader.clear_cache(file_path)
-	var data = _json_loader.load_json_file(file_path)
+	GameRoot.json_data_loader.clear_cache(file_path)
+	var data = GameRoot.json_data_loader.load_json_file(file_path)
 	
 	if data:
 		abilities[ability_id] = data
@@ -46,4 +42,4 @@ func reload_ability(ability_id: String) -> void:
 ## Valide les champs requis d'une ability
 func validate_ability(data: Dictionary) -> bool:
 	var required = ["id", "name", "type", "cost"]
-	return _json_loader.validate_schema(data, required)
+	return GameRoot.json_data_loader.validate_schema(data, required)

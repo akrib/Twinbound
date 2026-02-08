@@ -30,8 +30,7 @@ var dialogue_box: DialogueBoxClass = null
 func setup_scenario(scenario_path: String) -> void:
 	"""Configure un scénario depuis JSON"""
 	
-	var json_loader = JSONDataLoader.new()
-	scenario_data = json_loader.load_json_file(scenario_path)
+	scenario_data = GameRoot.json_data_loader.load_json_file(scenario_path)
 	
 	if scenario_data.is_empty():
 		push_error("[JSONScenarioModule] Erreur : impossible de charger ", scenario_path)

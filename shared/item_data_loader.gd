@@ -7,17 +7,21 @@ extends Node
 
 const ITEMS_DIR = "res://data/items/"
 
-var _json_loader: JSONDataLoader
+
 var items: Dictionary = {}
 var items_by_category: Dictionary = {}
 
-func _init():
-	_json_loader = JSONDataLoader.new()
 
 func load_all_items() -> void:
 	# Charge récursivement (pour avoir les sous-dossiers par catégorie)
-	items = _json_loader.load_json_directory(ITEMS_DIR, true)
+	items = GameRoot.json_data_loader.load_json_directory(ITEMS_DIR, true)
 	_organize_by_category()
+	
+	for category in items_by_category:
+		for item in items_by_category[category]:
+			if item.has("stats"):
+				for stat_key in item.stats:
+					item.stats[stat_key] = GameRoot.data_normalizer.to_int(item.stats[stat_key], 0)
 	
 	if items.is_empty():
 		push_warning("No items loaded")

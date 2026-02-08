@@ -259,32 +259,11 @@ func start_battle(battle_id: String) -> void:
 		push_error("[CampaignManager] ❌ Échec du stockage des données")
 
 func load_battle_data_from_json(battle_id: String) -> Dictionary:
-	"""Charge un fichier JSON de données de combat"""
-	
-	# Essayer le chemin depuis BATTLE_DATA_PATHS
 	var json_path = BATTLE_DATA_PATHS.get(battle_id, "")
-	
-	# Sinon essayer le chemin générique
 	if json_path == "":
 		json_path = "res://data/battles/%s.json" % battle_id
+	return GameRoot.json_data_loader.load_typed(json_path, "battle", "CampaignManager")
 	
-	if not FileAccess.file_exists(json_path):
-		push_error("[CampaignManager] Fichier de combat introuvable : %s" % json_path)
-		return {}
-	
-	var json_loader = JSONDataLoader.new()
-	var battle_data = json_loader.load_json_file(json_path)
-	
-	if typeof(battle_data) != TYPE_DICTIONARY or battle_data.is_empty():
-		push_error("[CampaignManager] Données invalides : %s" % battle_id)
-		return {}
-	
-	# Convertir les positions JSON
-	battle_data = _convert_json_positions(battle_data)
-	
-	print("[CampaignManager] ✅ Battle data chargée : %s" % battle_id)
-	return battle_data
-
 # ============================================================================
 # MERGE TEAM JOUEUR
 # ============================================================================
@@ -340,35 +319,6 @@ func _convert_team_unit_to_battle(unit: Dictionary, index: int) -> Dictionary:
 # CONVERSIONS JSON
 # ============================================================================
 
-func _convert_json_positions(data: Dictionary) -> Dictionary:
-	var result = data.duplicate(true)
-	
-	for key in ["player_units", "enemy_units"]:
-		if result.has(key):
-			for unit in result[key]:
-				if unit.has("position"):
-					var pos = unit.position
-					if pos is Array and pos.size() == 2:
-						unit.position = Vector2i(int(pos[0]), int(pos[1]))
-					elif pos is Dictionary:
-						unit.position = Vector2i(pos.get("x", 0), pos.get("y", 0))
-	
-	if result.has("terrain_obstacles"):
-		for obs in result.terrain_obstacles:
-			if obs.has("position"):
-				var pos = obs.position
-				if pos is Array and pos.size() == 2:
-					obs.position = Vector2i(int(pos[0]), int(pos[1]))
-				elif pos is Dictionary:
-					obs.position = Vector2i(pos.get("x", 0), pos.get("y", 0))
-	
-	if result.has("grid_size") and result["grid_size"] is Dictionary:
-		var grid = result["grid_size"]
-		if grid.has("width") and grid.has("height"):
-			result["grid_size"] = Vector2i(int(grid["width"]), int(grid["height"]))
-	
-	return result
-
 func _convert_to_dialogue_data(data_dict: Dictionary) -> DialogueData:
 	"""Convertit un dictionnaire JSON en DialogueData"""
 	
@@ -398,18 +348,8 @@ func _convert_to_dialogue_data(data_dict: Dictionary) -> DialogueData:
 # ============================================================================
 
 func _load_campaign_start_from_json() -> Dictionary:
-	if not FileAccess.file_exists(CAMPAIGN_START_PATH):
-		push_warning("[CampaignManager] Fichier introuvable : %s" % CAMPAIGN_START_PATH)
-		return {}
-	
 	var json_loader = JSONDataLoader.new()
-	var data = json_loader.load_json_file(CAMPAIGN_START_PATH)
-	
-	if typeof(data) != TYPE_DICTIONARY or data.is_empty():
-		push_error("[CampaignManager] Format invalide pour campaign_start.json")
-		return {}
-	
-	return data
+	return json_loader.load_typed(CAMPAIGN_START_PATH, "campaign", "CampaignManager")
 
 # ============================================================================
 # PROGRESSION

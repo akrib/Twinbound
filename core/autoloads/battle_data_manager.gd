@@ -57,7 +57,7 @@ func set_battle_data(data: Dictionary) -> bool:
 		battle_data_invalid.emit(result.errors)
 		return false
 
-	_current_battle_data = result.data.duplicate(true)
+	_current_battle_data = GameRoot.data_normalizer.normalize_battle_data(result.data)
 	_is_data_valid = true
 	_battle_id = data.get("battle_id", "unknown_" + str(Time.get_unix_time_from_system()))
 
@@ -157,26 +157,3 @@ func _on_battle_ended(_results: Dictionary) -> void:
 func _exit_tree() -> void:
 	if GameRoot and GameRoot.event_bus:
 		GameRoot.event_bus.disconnect_all(self)
-
-func _normalize_battle_data(data: Dictionary) -> void:
-	# Normalisation des positions et HP
-	if data.has("player_units"):
-		for unit in data.player_units:
-			unit.current_hp = int(unit.current_hp)
-			unit.max_hp = int(unit.max_hp)
-
-			if unit.has("position") and unit.position is Array and unit.position.size() == 2:
-				unit.position = Vector2i(int(unit.position[0]), int(unit.position[1]))
-
-	if data.has("enemy_units"):
-		for unit in data.enemy_units:
-			unit.current_hp = int(unit.current_hp)
-			unit.max_hp = int(unit.max_hp)
-
-			if unit.has("position") and unit.position is Array and unit.position.size() == 2:
-				unit.position = Vector2i(int(unit.position[0]), int(unit.position[1]))
-
-	if data.has("terrain_obstacles"):
-		for obs in data.terrain_obstacles:
-			if obs.has("position") and obs.position is Array and obs.position.size() == 2:
-				obs.position = Vector2i(int(obs.position[0]), int(obs.position[1]))

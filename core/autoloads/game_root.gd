@@ -25,6 +25,7 @@ const DebugOverlayClass    = preload("res://core/autoloads/debug_overlay.gd")
 const SceneRegistry        = preload("res://core/data/scene_registry.gd")
 const JSONDataLoader       = preload("res://core/data/json_data_loader.gd")
 const ModelValidator       = preload("res://core/data/model_validator.gd")
+const DataNormalizer       = preload("res://core/data/data_normalizer.gd")
 const ValidationResult     = preload("res://core/data/validation_result.gd")
 const AbilityDataLoader    = preload("res://core/data/ability_data_loader.gd")
 
@@ -61,6 +62,8 @@ var version_manager: VersionManagerClass = null
 var team_manager : TeamManagerClass = null  # TeamManager n'a pas de class_name typé
 var dialogue_data : DialogueData = null
 var campaign_manager: CampaignManagerClass = null
+var data_normalizer :  DataNormalizer = null
+var json_data_loader : JSONDataLoader = null
 # ============================================================================
 # CONTENEUR DE SCÈNES
 # ============================================================================
@@ -79,6 +82,8 @@ const SCRIPTS = {
 	"game_manager": "res://core/autoloads/game_manager.gd",
 	"ui_manager": "res://core/autoloads/ui_manager.gd",
 	"debug_overlay": "res://core/autoloads/debug_overlay.gd",
+	"json_data_loader": "res://core/data/json_data_loader.gd",
+	"data_normalizer": "res://core/data/data_normalizer.gd",
 	"battle_data_manager": "res://core/autoloads/battle_data_manager.gd",
 	"dialogue_manager": "res://core/autoloads/dialogue_manager.gd",
 	"version_manager": "res://core/autoloads/version_manager.gd",
@@ -171,6 +176,10 @@ func _initialize_managers() -> void:
 	
 	# CampaignManager (après les autres car il les utilise)
 	campaign_manager = _create_system("campaign_manager", "CampaignManager") as CampaignManagerClass
+	
+	json_data_loader = _create_system("json_data_loader", "JSONDataLoadernManager") as JSONDataLoadernManager
+	
+	data_normalizer = _create_system("data_normalizer", "DataNormalizer") as DataNormalizer
 	
 	print("[GameRoot] ✅ Managers initialisés")
 

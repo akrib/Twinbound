@@ -7,20 +7,21 @@ extends Node
 
 const ENEMIES_DIR = "res://data/enemies/"
 
-var _json_loader: JSONDataLoader
 var enemies: Dictionary = {}
 
-func _init():
-	_json_loader = JSONDataLoader.new()
-
 func load_all_enemies() -> void:
-	enemies = _json_loader.load_json_directory(ENEMIES_DIR, true)
+	enemies = GameRoot.json_data_loader.load_json_directory(ENEMIES_DIR, true)
 	
+	for enemy_id in enemies:
+		if enemies[enemy_id] is Dictionary:
+			GameRoot.data_normalizer.normalize_unit(enemies[enemy_id])
+
 	if enemies.is_empty():
 		push_warning("No enemies loaded")
 	else:
 		print("Loaded %d enemy types" % enemies.size())
-		GameRoot.event_bus.emit_signal("data_loaded", "enemies", enemies)
+		if GameRoot and GameRoot.event_bus:
+			GameRoot.event_bus.data_loaded.emit("enemies", enemies)
 
 func get_enemy(enemy_id: String) -> Dictionary:
 	if enemies.has(enemy_id):

@@ -75,14 +75,12 @@ class AttackProfile:
 var materialization_rings: Dictionary = {}  # ring_id -> MaterializationRing
 var channeling_rings: Dictionary = {}  # ring_id -> ChannelingRing
 
-var json_loader: JSONDataLoader = null
 
 # ============================================================================
 # INITIALISATION
 # ============================================================================
 
 func _ready() -> void:
-	json_loader = JSONDataLoader.new()
 	print("[RingSystem] ✅ Initialisé")
 
 # ============================================================================
@@ -100,7 +98,7 @@ func load_rings_from_json(json_path: String) -> bool:
 	}
 	"""
 	
-	var data = json_loader.load_json_file(json_path, true)
+	var data = GameRoot.json_data_loader.load_json_file(json_path, true)
 	
 	if typeof(data) != TYPE_DICTIONARY or data.is_empty():
 		push_error("[RingSystem] ❌ Impossible de charger : ", json_path)

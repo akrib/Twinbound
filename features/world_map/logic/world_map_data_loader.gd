@@ -14,18 +14,7 @@ static var _location_cache: Dictionary = {}
 ## Charge les données complètes de la world map
 static func load_world_map_data(map_id: String = "world_map_data", use_cache: bool = true) -> Dictionary:
 	var json_path = WORLD_MAP_PATH + map_id + ".json"
-	
-	var json_loader = JSONDataLoader.new()
-	var raw_data = json_loader.load_json_file(json_path, use_cache)
-	
-	if typeof(raw_data) != TYPE_DICTIONARY or raw_data.is_empty():
-		push_error("[WorldMapDataLoader] ❌ Impossible de charger : ", json_path)
-		return {}
-	
-	# Convertir les positions
-	raw_data = _convert_map_positions(raw_data)
-	
-	return raw_data
+	return GameRoot.json_data_loader.load_typed(json_path, "world_map", "WorldMapDataLoader")
 
 # ============================================================================
 # CHARGEMENT DES LOCATIONS
@@ -35,8 +24,7 @@ static func load_world_map_data(map_id: String = "world_map_data", use_cache: bo
 static func load_location_data(location_id: String, use_cache: bool = true) -> Dictionary:
 	var json_path = WORLD_MAP_PATH + "locations/" + location_id + ".json"
 	
-	var json_loader = JSONDataLoader.new()
-	var raw_data = json_loader.load_json_file(json_path, use_cache)
+	var raw_data = GameRoot.json_data_loader.load_json_file(json_path, use_cache)
 	
 	if typeof(raw_data) != TYPE_DICTIONARY or raw_data.is_empty():
 		push_error("[WorldMapDataLoader] ❌ Impossible de charger location : ", json_path)
@@ -44,16 +32,6 @@ static func load_location_data(location_id: String, use_cache: bool = true) -> D
 	
 	return raw_data
 
-static func _convert_map_positions(data: Dictionary) -> Dictionary:
-	var result = data.duplicate(true)
-	
-	if result.has("locations"):
-		for location in result.locations:
-			if location.has("position"):
-				var pos = location.position
-				location.position = Vector2i(pos.x, pos.y)
-	
-	return result
 
 # ============================================================================
 # QUERIES
