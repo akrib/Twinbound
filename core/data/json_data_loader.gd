@@ -1,5 +1,5 @@
+extends Node
 class_name JSONDataLoader
-extends RefCounted
 ## Chargeur JSON générique avec validation, cache et normalisation
 ## 
 ## API Haute-Niveau :

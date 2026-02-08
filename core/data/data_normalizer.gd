@@ -1,5 +1,5 @@
+extends Node
 class_name DataNormalizer
-extends RefCounted
 ## DataNormalizer - Normalisation centralisée des données JSON
 ## Convertit les données JSON brutes en types Godot natifs
 

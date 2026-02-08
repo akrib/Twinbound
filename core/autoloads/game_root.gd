@@ -149,6 +149,8 @@ func _initialize_core_systems() -> void:
 	"""Initialise les systèmes de base (EventBus, Logger)"""
 	global_logger = _create_system("global_logger", "GlobalLogger") as GlobalLoggerClass
 	event_bus = _create_system("event_bus", "EventBus") as EventBusClass
+	json_data_loader = _create_system("json_data_loader", "JSONDataLoader") as JSONDataLoader
+	data_normalizer = _create_system("data_normalizer", "DataNormalizer") as DataNormalizer
 	print("[GameRoot] ✅ Systèmes de base initialisés")
 
 func _initialize_managers() -> void:
@@ -176,10 +178,6 @@ func _initialize_managers() -> void:
 	
 	# CampaignManager (après les autres car il les utilise)
 	campaign_manager = _create_system("campaign_manager", "CampaignManager") as CampaignManagerClass
-	
-	json_data_loader = _create_system("json_data_loader", "JSONDataLoadernManager") as JSONDataLoadernManager
-	
-	data_normalizer = _create_system("data_normalizer", "DataNormalizer") as DataNormalizer
 	
 	print("[GameRoot] ✅ Managers initialisés")
 
@@ -359,6 +357,11 @@ func get_dialogue_manager() -> DialogueManagerClass:
 func get_campaign_manager() -> CampaignManagerClass:
 	return campaign_manager
 
+func get_json_data_loader() -> JSONDataLoader:
+	return json_data_loader
+	
+func get_data_normalizer() -> DataNormalizer:
+	return data_normalizer
 # ============================================================================
 # DEBUG
 # ============================================================================
@@ -376,6 +379,8 @@ func print_status() -> void:
 	print("  SceneLoader: ", "OK" if scene_loader else "NULL")
 	print("  GameManager: ", "OK" if game_manager else "NULL")
 	print("  UIManager: ", "OK" if ui_manager else "NULL")
+	print("  JSONDataLoader: ", "OK" if json_data_loader else "NULL")
+	print("  DataNormalizer: ", "OK" if data_normalizer else "NULL")
 	print("  BattleDataManager: ", "OK" if battle_data_manager else "NULL")
 	print("  DialogueManager: ", "OK" if dialogue_manager else "NULL")
 	print("  CampaignManager: ", "OK" if campaign_manager else "NULL")
