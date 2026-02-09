@@ -27,11 +27,11 @@ const JSONDataLoader       = preload("res://core/data/json_data_loader.gd")
 const ModelValidator       = preload("res://core/data/model_validator.gd")
 const DataNormalizer       = preload("res://core/data/data_normalizer.gd")
 const ValidationResult     = preload("res://core/data/validation_result.gd")
-const AbilityDataLoader    = preload("res://core/data/ability_data_loader.gd")
+#const AbilityDataLoader    = preload("res://core/data/ability_data_loader.gd")
 
 # === DIALOGUE SYSTEM ===
 const DialogueData         = preload("res://core/dialogue/dialogue_data.gd")
-const DialogueDataLoader   = preload("res://core/dialogue/dialogue_data_loader.gd")
+#const DialogueDataLoader   = preload("res://core/dialogue/dialogue_data_loader.gd")
 const DialogueBoxClass     = preload("res://core/dialogue/dialogue_box.gd")
 const BarkSystem           = preload("res://core/dialogue/bark_system.gd")
 
@@ -56,6 +56,7 @@ var game_manager: GameManagerClass = null
 var ui_manager: UIManagerClass = null
 var debug_overlay: DebugOverlayClass = null
 var global_logger: GlobalLoggerClass = null
+var data_manager: DataManager = null
 var battle_data_manager: BattleDataManagerClass = null
 var dialogue_manager: DialogueManagerClass = null
 var version_manager: VersionManagerClass = null
@@ -64,6 +65,8 @@ var dialogue_data : DialogueData = null
 var campaign_manager: CampaignManagerClass = null
 var data_normalizer :  DataNormalizer = null
 var json_data_loader : JSONDataLoader = null
+
+
 # ============================================================================
 # CONTENEUR DE SCÈNES
 # ============================================================================
@@ -80,6 +83,7 @@ const SCRIPTS = {
 	"global_logger": "res://core/autoloads/global_logger.gd",
 	"scene_loader": "res://core/autoloads/scene_loader.gd",
 	"game_manager": "res://core/autoloads/game_manager.gd",
+	"data_manager": "res://core/data/data_manager.gd",
 	"ui_manager": "res://core/autoloads/ui_manager.gd",
 	"debug_overlay": "res://core/autoloads/debug_overlay.gd",
 	"json_data_loader": "res://core/data/json_data_loader.gd",
@@ -124,6 +128,16 @@ func _ready() -> void:
 	_connect_systems()
 	_check_migrations()
 	
+	
+	data_manager.register_standard_types()
+	
+	# Charger toutes les données
+	data_manager.load_all("abilities")
+	data_manager.load_all("items")
+	data_manager.load_all("enemies")
+	data_manager.load_all("dialogues")
+	
+	
 	_is_initialized = true
 	
 	print("========================================")
@@ -164,6 +178,9 @@ func _initialize_managers() -> void:
 	game_manager = _create_system("game_manager", "GameManager") as GameManagerClass
 	game_manager.scene_loader = scene_loader
 	
+	# DataManager
+	data_manager = _create_system("data_manager", "DataManager") as DataManager
+		
 	# BattleDataManager
 	battle_data_manager = _create_system("battle_data_manager", "BattleDataManager") as BattleDataManagerClass
 	
@@ -348,6 +365,9 @@ func get_ui_manager() -> UIManagerClass:
 func get_global_logger() -> GlobalLoggerClass:
 	return global_logger
 
+func get_data_manager() -> DataManager:
+	return data_manager
+	
 func get_battle_data_manager() -> BattleDataManagerClass:
 	return battle_data_manager
 
@@ -378,6 +398,7 @@ func print_status() -> void:
 	print("  GlobalLogger: ", "OK" if global_logger else "NULL")
 	print("  SceneLoader: ", "OK" if scene_loader else "NULL")
 	print("  GameManager: ", "OK" if game_manager else "NULL")
+	print("  DataManager: ", "OK" if data_manager else "NULL")
 	print("  UIManager: ", "OK" if ui_manager else "NULL")
 	print("  JSONDataLoader: ", "OK" if json_data_loader else "NULL")
 	print("  DataNormalizer: ", "OK" if data_normalizer else "NULL")

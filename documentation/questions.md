@@ -1,0 +1,4 @@
+
+Question a l'IA sur l'équilibrage
+
+IA si tu devais incarner des milliers de joueurs diamétralement diffèrent (mais qui cherchent tous globalement a gagner, même si certain essayeront de débloquer toutes les fins en priorisant certain builds) en sachant qu'il peuvent avoir avec eux 10 personnage des 15 classes différente et des 6 races du jeu. quel serait le tableau de répartissions (pas besoin des choix de chacun, juste un tableau de statistique des choix pour montrer quelle sont les classes/race les plus utilisé) et voir si il y a un déséquilibre, en prenant en compte que les classe et les races sont bien documenté et les feedback visuels bien présent pour que les joueurs comprennent bien le jeu

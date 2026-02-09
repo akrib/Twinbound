@@ -27,4 +27,5 @@
 -mini scénario
 -plus de feedback joueur pendant le combat (griser les personnages joué (teinte))
 -expliqué dé le début les combat en duo
+Passer l'UI du DebugOverlay en scène .tscn pour épurer le code source.
 
