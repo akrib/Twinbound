@@ -13,6 +13,7 @@ Documentation status report
 📄 core/autoloads/ui_manager.gd → NOT DOCUMENTED
 📄 core/autoloads/version_manager.gd → NOT DOCUMENTED
 📄 core/data/ability_data_loader.gd → NOT DOCUMENTED
+📄 core/data/data_manager.gd → NOT DOCUMENTED
 📄 core/data/data_normalizer.gd → NOT DOCUMENTED
 📄 core/data/json_data_loader.gd → NOT DOCUMENTED
 📄 core/data/model_validator.gd → NOT DOCUMENTED

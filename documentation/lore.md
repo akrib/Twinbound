@@ -873,3 +873,4 @@ Status quo, le joueur arrive a garder un etat stable avec les trois etat et ne s
 Et la bad ending, ou a la fin du chapitre 3 le joueur trahis aussi son allié restant (possible que si il a 2 ennemis en face) et devient un dictateur pour le monde
 
 
+test
